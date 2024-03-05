@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const comments = require('./comments.js')
 
 const Schema = mongoose.Schema;
 
@@ -12,8 +13,9 @@ const forumsSchema = new Schema({
     downvotes: { type: Number, default: 0 },
     upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    viewCount: { type: Number, default: 0 },
     replyCount: { type: Number, default: 0 },
-    replies: [{}],
+    replies: [comments],
     edited: { type: Boolean, default: false },
     editedAt: { type: Date },
     deleted: { type: Boolean, default: false },

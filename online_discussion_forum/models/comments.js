@@ -13,8 +13,6 @@ const commentsSchema = new Schema({
     downvotes: { type: Number, default: 0 },
     upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    replyCount: { type: Number, default: 0 },
-    replies: [{}],
     edited: { type: Boolean, default: false },
     editedAt: { type: Date },
     deleted: { type: Boolean, default: false },
