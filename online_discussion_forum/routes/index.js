@@ -1,20 +1,15 @@
 const express = require('express');
-const signup_controller = require('../controllers/signupController');
+const index_controller = require('../controllers/indexController');
 
 const router = express.Router();
 
-
-
 /* GET home page. */
-router.get('/', signup_controller.home_page);
+router.get('/', index_controller.home_page);
 
-router.get('/signup', function(req, res, next) {
+/* GET login page*/ 
+router.get('/login', index_controller.log_in_page);
 
-});
-
-/* POST signup page*/ 
-router.post('/signup', (req, res, next) => {
-  
-});
+/* POST login page*/ 
+router.post('/login', index_controller.log_in);
 
 module.exports = router;

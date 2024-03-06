@@ -13,7 +13,10 @@ const accountSchema = new Schema({
     bio: { type: String, maxLength: 100 },
     date_of_birth: { type: Date },
     sex: { type: Date },
-    department: { type: String }
+    department: { type: String },
+    grade_level: { type: String },
+    officer: { type: String },
+    role: { type: String },
 });
 
 module.exports = mongoose.model("Users", accountSchema)

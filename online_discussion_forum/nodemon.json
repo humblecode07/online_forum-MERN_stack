@@ -1,5 +1,6 @@
 {
     "env": {
-        "MONGO_ATLAS_PW": "do28ysXvo7qdNYnX"
+        "MONGO_ATLAS_PW": "do28ysXvo7qdNYnX",
+        "JWT_KEY": "sakayanagi"
     }
 }
