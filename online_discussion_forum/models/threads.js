@@ -3,7 +3,7 @@ const comments = require('./comments.js')
 
 const Schema = mongoose.Schema;
 
-const forumsSchema = new Schema({
+const threadsSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
     username: { type: String, required: true },
     profilePicture: { type: String, required: true },
@@ -22,4 +22,4 @@ const forumsSchema = new Schema({
     deletedAt: { type: Date },
 });
 
-module.exports = mongoose.model("Forums", forumsSchema);
+module.exports = mongoose.model("Forums", threadsSchema);
