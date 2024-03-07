@@ -5,9 +5,13 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
 
+// ROUTERS
 const indexRouter = require('./routes/index');
+const adminRouter = require('./routes/admin');
 
 const app = express();
+
+app.use(express.json());
 
 mongoose.set("strictQuery", false);
 const mongoDB = "mongodb+srv://sakayanagi:" + process.env.MONGO_ATLAS_PW + "@cluster0.nciqe98.mongodb.net/ol_disc_forum?retryWrites=true&w=majority&appName=Cluster0";
@@ -28,6 +32,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/admin', adminRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

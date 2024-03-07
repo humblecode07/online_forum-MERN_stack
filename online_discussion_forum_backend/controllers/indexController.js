@@ -1,7 +1,7 @@
-const User = require('../models/users')
+const User = require('../models/users');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 const asyncHandler = require("express-async-handler");
 
@@ -49,16 +49,5 @@ exports.log_in = asyncHandler(async (req, res, next) => {
 
 
 /* 
-User.find({
-        email: req.body.email
-      })
-      .exec()
-      .then(user => {
-        if (user.length >= 1) {
-          return res.status(409).render('') // putting an email exist into the signup
-        }
-        else {
-            
-        }
-    }) 
+
 */

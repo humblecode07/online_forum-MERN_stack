@@ -7,6 +7,7 @@ const threadsSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
     username: { type: String, required: true },
     profilePicture: { type: String, required: true },
+    title: { type: String, required: true },
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now},
     upvotes: { type: Number, default: 0 },
@@ -20,6 +21,7 @@ const threadsSchema = new Schema({
     editedAt: { type: Date },
     deleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
+    pinned: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model("Forums", threadsSchema);
