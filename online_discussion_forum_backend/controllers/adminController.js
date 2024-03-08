@@ -73,13 +73,31 @@ exports.user_post_changepass = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(req.body.password, salt)
-    const updatedUser = await User.findByIdAndUpdate({ _id: userId }, { pass: hashPassword }, { new: true })
+    const updatedPass = await User.findByIdAndUpdate({ _id: userId }, { pass: hashPassword }, { new: true })
+
+    if (!updatedPass) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+        message: "Password changed successfully"
+    })
+})
+
+/* Update user's info*/
+exports.user_patch_info = asyncHandler(async (req, res, next) => {
+    const { userId } = req.params;
+
+    const updatedUser = await User.findByIdAndUpdate({ _id: userId }, {
+        $set: req.body
+    }, { new: true })
 
     if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
     }
 
     return res.status(200).json({
-        message: "Password changed successfully"
+        message: "User info has been updated.",
+        user: updatedUser
     })
 })
