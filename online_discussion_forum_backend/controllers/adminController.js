@@ -5,8 +5,21 @@ const jwt = require('jsonwebtoken');
 
 const asyncHandler = require('express-async-handler');
 
-/* POST request of user*/
-exports.user_create_post = asyncHandler((req, res, next) => {
+/* Display all users */
+exports.user_get = asyncHandler(async (req, res, next) => {
+    const [users, userCount] = await Promise.all([
+        User.find().exec(),
+        User.countDocuments().exec()
+    ]);
+
+    return res.status(201).json({
+        users,
+        userCount
+    });
+});
+
+/* Create user account*/
+exports.user_post_create = asyncHandler(async (req, res, next) => {
     User.find({
         email: req.body.email
       })
@@ -49,14 +62,24 @@ exports.user_create_post = asyncHandler((req, res, next) => {
                             message: "User created"
                         })
                     })
-                    .catch(err => {
-                        console.log(err)
-                        res.status(500).json({
-                            error: err
-                        })
-                    });
                 }
             })
         }
     }) 
 });
+
+/* Change user password*/
+exports.user_post_changepass = asyncHandler(async (req, res, next) => {
+    const { userId } = req.params;
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(req.body.password, salt)
+    const updatedUser = await User.findByIdAndUpdate({ _id: userId }, { pass: hashPassword }, { new: true })
+
+    if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+        message: "Password changed successfully"
+    })
+})
