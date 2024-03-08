@@ -7,21 +7,21 @@ const threadsSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
     username: { type: String, required: true },
     profilePicture: { type: String, required: true },
+    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Forums', required: true }],
     title: { type: String, required: true },
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now},
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
-    upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
+    downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
     viewCount: { type: Number, default: 0 },
     replyCount: { type: Number, default: 0 },
-    replies: [comments],
+    replies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
     edited: { type: Boolean, default: false },
     editedAt: { type: Date },
-    deleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
     pinned: { type: Boolean, default: false }
 });
 
-module.exports = mongoose.model("Forums", threadsSchema);
+module.exports = mongoose.model("Threads", threadsSchema);
