@@ -82,7 +82,7 @@ exports.user_post_changepass = asyncHandler(async (req, res, next) => {
     return res.status(200).json({
         message: "Password changed successfully"
     })
-})
+});
 
 /* Update user's info*/
 exports.user_patch_info = asyncHandler(async (req, res, next) => {
@@ -99,5 +99,20 @@ exports.user_patch_info = asyncHandler(async (req, res, next) => {
     return res.status(200).json({
         message: "User info has been updated.",
         user: updatedUser
+    })
+});
+
+exports.user_delete = asyncHandler(async (req, res, next) => {
+    const { userId } = req.params;
+
+    const user = await User.findByIdAndDelete({ _id: userId })
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+        message: "User info has been deleted.",
+        user: user
     })
 })

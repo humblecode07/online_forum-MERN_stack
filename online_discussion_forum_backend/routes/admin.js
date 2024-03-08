@@ -15,7 +15,7 @@ router.post('/users/:userId', admin_controller.user_post_changepass);
 /* PATCH request user update info*/
 router.patch('/users/:userId', admin_controller.user_patch_info)
 
-// /* DELETE request user*/
-// router.delete('users', admin_controller.user_delete)
+/* DELETE request user*/
+router.delete('/users/:userId', admin_controller.user_delete)
 
 module.exports = router;
