@@ -1,5 +1,6 @@
 const express = require('express');
 const admin_controller = require('../controllers/adminController');
+const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
@@ -39,5 +40,27 @@ router.patch('/forums/:forumId', admin_controller.forum_patch_info);
 
 /* DELETE request forum */
 router.delete('/forums/:forumId', admin_controller.forum_delete);
+
+// THREADS
+
+/* GET request of all threads */
+router.get('/threads', admin_controller.thread_get_all);
+
+/* GET request of all threads on a certain forum */
+router.get('/forums/:forumId/threads', admin_controller.thread_get_all_forum);
+
+/* GET request of a thread on a certain forum */
+router.get('/forums/:forumId/threads/:threadId', admin_controller.thread_get_one_forum);
+
+/* POST request thread create */
+router.post('/forums/:forumId/threads', checkAuth, admin_controller.thread_create);
+
+/* PATCH request of a thread */
+router.patch('/forums/:forumId/threads/:threadId', admin_controller.thread_update);
+
+/* DELETE request of thread */
+router.delete('/forums/:forumId/threads/:threadId', admin_controller.thread_delete);
+
+// COMMENTS
 
 module.exports = router;

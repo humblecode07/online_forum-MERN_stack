@@ -6,8 +6,8 @@ const Schema = mongoose.Schema;
 const threadsSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
     username: { type: String, required: true },
-    profilePicture: { type: String, required: true },
-    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Forums', required: true }],
+    // profilePicture: { type: String, required: true },
+    posts: { type: mongoose.Schema.Types.ObjectId, ref: 'Forums', required: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now},

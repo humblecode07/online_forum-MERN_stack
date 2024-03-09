@@ -21,11 +21,15 @@ exports.log_in = asyncHandler(async (req, res, next) => {
   .exec()
   .then(user => {
     if (user.length < 1) {
-      return res.status(404).render() //  RENDER LOG IN PAGE: AUTH FAILED 
+      return res.status(404).json({
+        message: "login successful"
+      })
     }
-    bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+    bcrypt.compare(req.body.password, user[0].pass, (err, result) => {
       if (err) {
-        //  RENDER LOG IN PAGE: AUTH FAILED
+        return res.status(401).json({
+          message: 'Auth Failed'
+        })
       }
       if (result) {
         const token = jwt.sign({
@@ -39,15 +43,9 @@ exports.log_in = asyncHandler(async (req, res, next) => {
           token: token
         })
       }
-      return res.status(401).render({
-        //  RENDER LOG IN PAGE: AUTH FAILED
-    }); 
-    })
+      return res.status(401).json({
+        message: "auth failed"
+      })
+    });
   })
-});
-
-
-
-/* 
-
-*/
+})
