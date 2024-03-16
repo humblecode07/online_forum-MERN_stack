@@ -1,6 +1,7 @@
 const User = require('../models/users');
 const Forum = require('../models/forums');
 const Thread = require('../models/threads');
+const Comment = require('../models/comments');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -38,52 +39,42 @@ exports.user_get_one = asyncHandler(async (req, res, next) => {
 
 /* Create user account*/
 exports.user_post_create = asyncHandler(async (req, res, next) => {
-    User.find({
-        email: req.body.email
-      })
-      .exec()
-      .then(user => {
-        if (user.length >= 1) {
-          return res.status(409).json({
-            message: 'E-mail exist'
-          }) // putting an email exist into the signup
-        }
-        else {
-            bcrypt.hash(req.body.pass, 10, (err, hash) => {
-                if (err) {
-                    return res.status(500).json({
-                        error: err
-                    });
-                }
-                else {
-                    const user = new User({
-                        _id: new mongoose.Types.ObjectId(),
-                        school_id: req.body.school_id,
-                        first_name: req.body.first_name,
-                        family_name: req.body.family_name,
-                        user_name: req.body.user_name,
-                        email: req.body.email,
-                        pass: hash,
-                        bio: req.body.bio,
-                        date_of_birth: req.body.date_of_birth,
-                        sex: req.body.sex,
-                        department: req.body.department,
-                        year_level: req.body.year_level,
-                        officer: req.body.officer ,
-                        role: req.body.role
-                    });
-                    
-                    user.save()
-                    .then(result => {
-                        console.log(result);
-                        res.status(201).json({
-                            message: "User created"
-                        })
-                    })
-                }
-            })
-        }
-    }) 
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (existingUser) {
+        return res.status(409).json({
+            message: 'E-mail already exists'
+        });
+    }
+
+    try {
+        const hash = await bcrypt.hash(req.body.pass, 10);
+        const user = new User({
+            _id: new mongoose.Types.ObjectId(),
+            school_id: req.body.school_id,
+            first_name: req.body.first_name,
+            family_name: req.body.family_name,
+            user_name: req.body.user_name,
+            email: req.body.email,
+            pass: hash,
+            bio: req.body.bio,
+            date_of_birth: req.body.date_of_birth,
+            sex: req.body.sex,
+            department: req.body.department,
+            year_level: req.body.year_level,
+            officer: req.body.officer,
+            role: req.body.role instanceof Array ? req.body.role : [req.body.role]
+        });
+        
+        const savedUser = await user.save();
+        console.log(savedUser);
+        return res.status(201).json({
+            message: "User created"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
 });
 
 /* Change user password*/
@@ -167,21 +158,20 @@ exports.forum_get_one = asyncHandler(async (req, res, next) => {
 
 /* Create forum */
 exports.forum_create = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.userData.userId);
+
     const forum = new Forum({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        creator: req.body.creator,
+        creator: user.first_name + " " + user.family_name,
         description: req.body.description,
         creationTime: req.body.creationTime,
-        threads: req.body.threads,
-        editedAt: req.body.editedAt,
-        deletedAt: req.body.deletedAt,
     });
 
     await forum.save();
 
     return res.status(200).json({
-        message: "Forum " + req.body.name + " has been created",
+        message: "Forum, " + req.body.name + ", has been created",
     })
 });
 
@@ -266,7 +256,7 @@ exports.thread_create = asyncHandler(async (req, res, next) => {
         _id: new mongoose.Types.ObjectId(),
         user: user._id,
         username: user.user_name,
-        posts: req.params.forumId,
+        forumPost: req.params.forumId,
         title: req.body.title,
         content: req.body.content
     });
@@ -279,7 +269,7 @@ exports.thread_create = asyncHandler(async (req, res, next) => {
     );
 
     return res.status(200).json({
-        message: "Thread " + req.body.title + " has been created",
+        message: "Thread, " + req.body.title + ", has been created",
     })
 });
 
@@ -326,3 +316,102 @@ exports.thread_delete = asyncHandler(async (req, res, next) => {
 });
 
 // COMMENTS
+
+/* Get all comments on a certain thread */
+exports.comment_get_all = asyncHandler(async (req, res, next) => {
+    const threadId = req.params.threadId; 
+
+    const thread = await Thread.findById(threadId).exec();
+
+    if (!thread) {
+        return res.status(404).json({ message: "Thread not found" });
+    }
+    const comments = await Comment.find({ threadPost: threadId }).exec();
+    const commentCount = comments.length;
+
+    return res.status(200).json({ comments, commentCount });
+});
+
+/* Get certain comment on a certain thread */
+exports.comment_get_one = asyncHandler(async (req, res, next) => {
+    const commentId = req.params.commentId;
+
+    const comment = await Comment.findById(commentId).exec();
+
+    if (!comment) {
+        return res.status(404).json({ message: "Comment not found" });
+    }
+    const comments = await Comment.find({ _id: commentId }).exec();
+
+    return res.status(200).json({ comment });
+});
+
+/* Create a comment on a certain thread */
+exports.comment_create = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.userData.userId);
+
+    const comment = new Comment({
+        _id: new mongoose.Types.ObjectId(),
+        user: user._id,
+        username: user.user_name,
+        forumPost: req.params.forumId,
+        threadPost: req.params.threadId,
+        content: req.body.content
+    });
+
+    await comment.save();
+
+    await Thread.findByIdAndUpdate(req.params.threadId, 
+        { 
+            $push: { comments: comment._id }, 
+            $inc: { commentCount: 1}
+        }, 
+        { new: true }
+    );
+
+    return res.status(200).json({
+        message: "Comment has been created",
+    })
+});
+
+/* Update a comment on a certain thread */
+exports.comment_update = asyncHandler(async (req, res, next) => {
+    const commentId = req.params.commentId;
+
+    const updatedComment = await Comment.findByIdAndUpdate(commentId, {
+        $set: req.body, editedAt: Date.now()
+    }, { new: true });
+
+    if (!updatedComment) {
+        return res.status(404).json({ message: "Comment not found" });
+    }
+
+    return res.status(200).json({
+        message: "Comment has been updated.",
+        user: updatedComment
+    })
+});
+
+/* Delete a comment on a certain thread */
+exports.comment_delete = asyncHandler(async (req, res, next) => {
+    const threadId = req.params.threadId;
+    const commentId = req.params.commentId;
+
+    const comment = await Comment.findByIdAndDelete(commentId);
+
+    await Thread.findByIdAndUpdate(threadId, 
+        { $pull: { replies: commentId }, $inc: { replyCount: -1 } },
+        { new: true }
+    );
+
+    // Implement storage for deleted comments.
+
+    if (!comment) {
+        return res.status(404).json({ message: "Comment not found" });
+    }
+
+    return res.status(200).json({
+        message: "Comment has been deleted.",
+        comment: comment
+    })
+});

@@ -16,7 +16,19 @@ const accountSchema = new Schema({
     department: { type: String, required: true },
     year_level: { type: String, required: true },
     officer: { type: String, required: true },
-    role: { type: String, required: true },
+    role: [{ type: String, required: true }],
+});
+
+accountSchema.pre('save', function(next) {
+    if (!this.isModified('user_name')) {
+        return next();
+    }
+
+    if (!this.user_name.startsWith('@')) {
+        this.user_name = `@${this.user_name}`;
+    }
+
+    next();
 });
 
 module.exports = mongoose.model("Users", accountSchema)
