@@ -4,13 +4,17 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
+const cors = require('cors')
 
 // ROUTERS
 const indexRouter = require('./routes/index');
-const adminRouter = require('./routes/admin');
+const userRouter = require('./routes/user');
+const forumRouter = require('./routes/forum');
+const threadRouter = require('./routes/thread');
+const commentRouter = require('./routes/comment');
 
 const app = express();
-
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
 mongoose.set("strictQuery", false);
@@ -32,7 +36,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/admin', adminRouter)
+app.use('/users', userRouter)
+app.use('/forums', forumRouter)
+app.use('/:forumId/threads', threadRouter)
+app.use('/forums/:forumId/threads/:threadId/comments', commentRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
