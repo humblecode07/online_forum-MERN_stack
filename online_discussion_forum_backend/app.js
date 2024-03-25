@@ -35,11 +35,24 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const extractForumId = (req, res, next) => {
+  const { forumId } = req.params;
+  req.forumId = forumId;
+  next();
+};
+
+const extractThreadId = (req, res, next) => {
+  const { threadId } = req.params;
+  req.threadId = threadId;
+  next();
+};
+
 app.use('/', indexRouter);
 app.use('/users', userRouter)
 app.use('/forums', forumRouter)
-app.use('/:forumId/threads', threadRouter)
-app.use('/forums/:forumId/threads/:threadId/comments', commentRouter)
+app.use('/forums/:forumId/threads', extractForumId, threadRouter)
+app.use('/forums/:forumId/threads/:threadId/comments', extractThreadId, commentRouter)
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

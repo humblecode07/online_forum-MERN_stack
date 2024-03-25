@@ -7,7 +7,7 @@ const asyncHandler = require('express-async-handler');
 
 /* Get all comments on a certain thread */
 exports.comment_get_all = asyncHandler(async (req, res, next) => {
-    const threadId = req.params.threadId; 
+    const threadId = req.threadId; 
 
     const thread = await Thread.findById(threadId).exec();
 
@@ -16,6 +16,8 @@ exports.comment_get_all = asyncHandler(async (req, res, next) => {
     }
     const comments = await Comment.find({ threadPost: threadId }).exec();
     const commentCount = comments.length;
+
+    
 
     return res.status(200).json({ comments, commentCount });
 });
@@ -43,13 +45,13 @@ exports.comment_create = asyncHandler(async (req, res, next) => {
         user: user._id,
         username: user.user_name,
         forumPost: req.params.forumId,
-        threadPost: req.params.threadId,
+        threadPost: req.threadId,
         content: req.body.content
     });
 
     await comment.save();
 
-    await Thread.findByIdAndUpdate(req.params.threadId, 
+    await Thread.findByIdAndUpdate(req.threadId, 
         { 
             $push: { comments: comment._id }, 
             $inc: { commentCount: 1}
@@ -82,7 +84,7 @@ exports.comment_update = asyncHandler(async (req, res, next) => {
 
 /* Delete a comment on a certain thread */
 exports.comment_delete = asyncHandler(async (req, res, next) => {
-    const threadId = req.params.threadId;
+    const threadId = req.threadId;
     const commentId = req.params.commentId;
 
     const comment = await Comment.findByIdAndDelete(commentId);

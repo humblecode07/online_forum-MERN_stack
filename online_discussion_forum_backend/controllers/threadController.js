@@ -8,8 +8,8 @@ const asyncHandler = require('express-async-handler');
 /* Get all threads in a certain forum */
 exports.thread_get_all_forum = asyncHandler(async (req, res, next) => {
     const [thread, threadCount] = await Promise.all([
-        Thread.find({ forumPost: req.params.forumId }).exec(),
-        Thread.countDocuments({ forumPost: req.params.forumId }).exec()
+        Thread.find({ forumPost: req.forumId }).exec(),
+        Thread.countDocuments({ forumPost: req.forumId }).exec()
     ]);
 
     return res.status(201).json({
@@ -35,14 +35,14 @@ exports.thread_create = asyncHandler(async (req, res, next) => {
         _id: new mongoose.Types.ObjectId(),
         user: user._id,
         username: user.user_name,
-        forumPost: req.params.forumId,
+        forumPost: req.forumId,
         title: req.body.title,
         content: req.body.content
     });
 
     await thread.save();
 
-    await Forum.findByIdAndUpdate(req.params.forumId, 
+    await Forum.findByIdAndUpdate(req.forumId, 
         { $push: { threads: thread._id } }, 
         { new: true }
     );
@@ -73,7 +73,7 @@ exports.thread_update = asyncHandler(async (req, res, next) => {
 /* Delete a thread */
 exports.thread_delete = asyncHandler(async (req, res, next) => {
     const threadId = req.params.threadId;
-    const forumId = req.params.forumId;
+    const forumId = req.forumId;
 
     const thread = await Thread.findByIdAndDelete(threadId);
 
