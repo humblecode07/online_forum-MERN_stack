@@ -5,13 +5,17 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
 const cors = require('cors')
+const checkAuth = require('./middleware/check-auth')
 
 // ROUTERS
 const indexRouter = require('./routes/index');
+const refreshRouter = require('./routes/refreshToken');
+const logoutRouter = require('./routes/logout');
 const userRouter = require('./routes/user');
 const forumRouter = require('./routes/forum');
 const threadRouter = require('./routes/thread');
 const commentRouter = require('./routes/comment');
+
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:5173' }));
@@ -48,6 +52,10 @@ const extractThreadId = (req, res, next) => {
 };
 
 app.use('/', indexRouter);
+app.use('/refresh', refreshRouter);
+app.use('/logout', logoutRouter);
+
+app.use(checkAuth);
 app.use('/users', userRouter)
 app.use('/forums', forumRouter)
 app.use('/forums/:forumId/threads', extractForumId, threadRouter)

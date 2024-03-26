@@ -17,6 +17,7 @@ const accountSchema = new Schema({
     year_level: { type: String, required: true },
     officer: { type: String, required: true },
     role: [{ type: String, required: true }],
+    refreshToken: { type: String }
 });
 
 accountSchema.pre('save', function(next) {

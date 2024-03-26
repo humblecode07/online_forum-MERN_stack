@@ -17,35 +17,49 @@ exports.log_in_page = asyncHandler(async (req, res, next) => {
 
 /* Handle user log in POST*/
 exports.log_in = asyncHandler(async (req, res, next) => {
-  User.find({ email: req.body.email })
-  .exec()
-  .then(user => {
-    if (user.length < 1) {
-      return res.status(404).json({
-        message: "login successful"
-      })
+  const { email, password } = req.body;
+
+  if (!email || !password) return res.status(400).json({ 'message': 'Username and password are required.' })
+
+  const foundUser = await User.findOne({ email: email }).exec();
+
+  if (!foundUser) return res.sendStatus(401);
+
+  const match = await bcrypt.compare(password, foundUser.pass);
+
+  if (match) {
+    const token = jwt.sign({
+      email: foundUser.email,
+      userId: foundUser._id
+    }, process.env.JWT_KEY, {
+      expiresIn: "1d"
+    })
+
+    const refreshToken = jwt.sign({
+      email: foundUser.email,
+      userId: foundUser._id
+    }, process.env.REFRESH_JWT_KEY, {
+      expiresIn: "2d"
+    })
+
+    let userRole = '';
+        if (foundUser.role.includes('Admin')) {
+          userRole = 'Admin'
+        } else if (foundUser.role.includes('Moderator')) {
+          userRole = 'Moderator'
+        } else {
+          userRole = 'Student'
     }
-    bcrypt.compare(req.body.password, user[0].pass, (err, result) => {
-      if (err) {
-        return res.status(401).json({
-          message: 'Auth Failed'
-        })
-      }
-      if (result) {
-        const token = jwt.sign({
-          email: user[0].email,
-          userId: user[0]._id
-        }, process.env.JWT_KEY, {
-          expiresIn: "1hr"
-        })
-        return res.status(200).json({
+
+    foundUser.refreshToken = refreshToken;
+        await foundUser.save();
+
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+
+      return res.status(200).json({
           response: "Auth Successful.",
-          token: token
+          token: token,
+          role: userRole
         })
-      }
-      return res.status(401).json({
-        message: "auth failed"
-      })
-    });
-  })
+  }
 })
