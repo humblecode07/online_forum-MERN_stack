@@ -27,29 +27,22 @@ exports.log_in = asyncHandler(async (req, res, next) => {
 
   const match = await bcrypt.compare(password, foundUser.pass);
 
+  const roles = Object.values(foundUser.role).filter(Boolean);
+
   if (match) {
     const token = jwt.sign({
       email: foundUser.email,
-      userId: foundUser._id
+      roles: roles
     }, process.env.JWT_KEY, {
       expiresIn: "1d"
     })
 
     const refreshToken = jwt.sign({
       email: foundUser.email,
-      userId: foundUser._id
+      roles: roles
     }, process.env.REFRESH_JWT_KEY, {
       expiresIn: "2d"
     })
-
-    let userRole = '';
-        if (foundUser.role.includes('Admin')) {
-          userRole = 'Admin'
-        } else if (foundUser.role.includes('Moderator')) {
-          userRole = 'Moderator'
-        } else {
-          userRole = 'Student'
-    }
 
     foundUser.refreshToken = refreshToken;
         await foundUser.save();
@@ -59,7 +52,6 @@ exports.log_in = asyncHandler(async (req, res, next) => {
       return res.status(200).json({
           response: "Auth Successful.",
           token: token,
-          role: userRole
         })
   }
 })

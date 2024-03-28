@@ -18,7 +18,7 @@ const commentRouter = require('./routes/comment');
 
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 mongoose.set("strictQuery", false);

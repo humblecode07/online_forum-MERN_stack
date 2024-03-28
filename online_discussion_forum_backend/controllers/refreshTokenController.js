@@ -18,10 +18,11 @@ exports.handleRefreshToken = async (req, res) => {
         process.env.REFRESH_JWT_KEY,
         (err, decoded) => {
             if (err || foundUser.email !== decoded.email) return res.sendStatus(403);
+            const roles = Object.values(foundUser.role);
             const accessToken = jwt.sign(
                 {
                     "email": decoded.email,
-                    "userId": decoded.userId
+                    "roles": roles
                 },
                 process.env.JWT_KEY,
                 { expiresIn: '2d' }
