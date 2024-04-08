@@ -1,26 +1,34 @@
-import Users from './Users';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import useLogout from '../../hooks/useLogout';
+import { Box, Grid } from '@mui/material';
+import Dashboard from './Dashboard';
+
+import SideNav from '../../components/sideNav';
+import NavBar from '../../components/navBar';
+import { Outlet } from 'react-router-dom';
 
 const AdminPage = () => {
-    const navigate = useNavigate();
-    const logout = useLogout();
+  return (
+    <Box
+      height={"100dvh"}
+      width={"100dvw"}
+      display={"flex"}
+      flexDirection={"row"}
+      bgcolor={"grey"}
+    >
+      <SideNav />
+      <Box
+        flex={4}
+        bgcolor={"#f2f2f2"}
+        paddingLeft={'30px'}
+      >
+        <NavBar />
+        <Outlet />
+      </Box>
 
-    const signOut = async () => {
-        await logout();
-        navigate('/admin/login');
-    }
-
-    return (
-        <section>
-            <h1>Admins Page</h1>
-            <br />
-            <Users />
-            <br />
-
-            <button onClick={signOut}>Sign out</button>
-        </section>
-    )
+      
+    </Box>
+  )
 }
 
-export default AdminPage
+export default AdminPage;

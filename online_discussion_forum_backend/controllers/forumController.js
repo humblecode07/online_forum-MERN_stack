@@ -1,5 +1,7 @@
 const User = require('../models/users');
 const Forum = require('../models/forums');
+const Thread = require('../models/threads');
+const Comment = require('../models/comments');
 const mongoose = require('mongoose');
 const asyncHandler = require('express-async-handler');
 
@@ -32,10 +34,11 @@ exports.forum_get_one = asyncHandler(async (req, res, next) => {
 
 /* Create forum */
 exports.forum_create = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.userData.userId);
+    const user = await User.findById(req.userId);
 
     const forum = new Forum({
         _id: new mongoose.Types.ObjectId(),
+        user: user._id,
         name: req.body.name,
         creator: user.first_name + " " + user.family_name,
         description: req.body.description,
@@ -71,9 +74,13 @@ exports.forum_patch_info = asyncHandler(async (req, res, next) => {
 exports.forum_delete = asyncHandler(async (req, res, next) => {
     const { forumId } = req.params;
 
-    const forum = await Forum.findByIdAndDelete({ _id: forumId })
+    const threads = await Thread.find({ forumPost: forumId });
+    for (const thread of threads) {
+        await Comment.deleteMany({ threadPost: thread._id });
+        await Thread.findByIdAndDelete(thread._id);
+    }
 
-    // Implement storage for deleted forums.
+    const forum = await Forum.findByIdAndDelete({ _id: forumId })
 
     if (!forum) {
         return res.status(404).json({ message: "Forum not found" });

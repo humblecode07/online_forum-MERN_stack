@@ -7,6 +7,8 @@ exports.handleRefreshToken = async (req, res) => {
 
     const refreshToken = cookies.jwt;
 
+    console.log('a', refreshToken)
+
     const foundUser = await User.findOne({ refreshToken }).exec();
     
     if (!foundUser) {
@@ -22,11 +24,13 @@ exports.handleRefreshToken = async (req, res) => {
             const accessToken = jwt.sign(
                 {
                     "email": decoded.email,
-                    "roles": roles
+                    "roles": roles,
+                    "userId": decoded.userId
                 },
                 process.env.JWT_KEY,
                 { expiresIn: '2d' }
             );
+            console.log('accessToken', accessToken)
             res.json({ accessToken })
         }
     );

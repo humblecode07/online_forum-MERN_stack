@@ -32,14 +32,16 @@ exports.log_in = asyncHandler(async (req, res, next) => {
   if (match) {
     const token = jwt.sign({
       email: foundUser.email,
-      roles: roles
+      roles: roles,
+      userId: foundUser._id
     }, process.env.JWT_KEY, {
       expiresIn: "1d"
     })
 
     const refreshToken = jwt.sign({
       email: foundUser.email,
-      roles: roles
+      roles: roles,
+      userId: foundUser._id
     }, process.env.REFRESH_JWT_KEY, {
       expiresIn: "2d"
     })

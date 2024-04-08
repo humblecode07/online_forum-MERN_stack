@@ -1,4 +1,7 @@
 const User = require('../models/users');
+const Forum = require('../models/forums');
+const Thread = require('../models/threads');
+const Comment = require('../models/comments');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -48,6 +51,7 @@ exports.user_post_create = asyncHandler(async (req, res, next) => {
             first_name: req.body.first_name,
             family_name: req.body.family_name,
             user_name: req.body.user_name,
+            profile: req.file.path,
             email: req.body.email,
             pass: hash,
             bio: req.body.bio,
@@ -90,10 +94,14 @@ exports.user_post_changepass = asyncHandler(async (req, res, next) => {
 /* Update user's info*/
 exports.user_patch_info = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
+    const profileImage = req.file.path;
 
-    const updatedUser = await User.findByIdAndUpdate({ _id: userId }, {
-        $set: req.body
-    }, { new: true })
+    const userDataToUpdate = { ...req.body };
+    delete userDataToUpdate.profileImage;
+
+    userDataToUpdate.profile = profileImage;
+
+    const updatedUser = await User.findByIdAndUpdate(userId, { $set: userDataToUpdate }, { new: true });
 
     if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
@@ -102,21 +110,29 @@ exports.user_patch_info = asyncHandler(async (req, res, next) => {
     return res.status(200).json({
         message: "User info has been updated.",
         user: updatedUser
-    })
+    });
 });
 
 /* Delete user account*/
 exports.user_delete = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
 
-    const user = await User.findByIdAndDelete({ _id: userId })
+    const forums = await Forum.find({ user: userId });
+    for (const forum of forums) {
+        await Thread.deleteMany({ forumPost: forum._id });
+        await Forum.findByIdAndDelete(forum._id);
+    }
 
-    if (!user) {
+    await Comment.deleteMany({ user: userId });
+
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
         return res.status(404).json({ message: "User not found" });
     }
 
     return res.status(200).json({
-        message: "User info has been deleted.",
-        user: user
-    })
+        message: "User info and associated data have been deleted.",
+        user: deletedUser
+    });
 })

@@ -1,4 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { Route, NavLink, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
+
+import RootLayout from './layouts/RootLayout';
 
 import Layout from './pages/Layout';
 import RequireAuth from './pages/AdminSide/AdminRequireAuth';
@@ -19,14 +21,11 @@ import AdminReports from './pages/AdminSide/Reports';
 
 import Missing from './pages/Missing';
 import Unauthorized from './pages/Unauthorized';
+import { PostProvider } from './context/PostContext';
 
-const App = () => {
-
-  // const loggedIn = window.localStorage.getItem("isLoggedIn")
-
-  return (
-    <Routes>
-        <Route path="/" element={<Layout />}>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+        <Route path="/" element={<RootLayout />}>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
           <Route path='/admin/login' element={ <AuthLogin />} />  
@@ -35,16 +34,17 @@ const App = () => {
           {/* Admin */}
           <Route element={<PersistLogin />}>
             <Route element ={<RequireAuth allowedRoles={["Admin"]}/>}>
-              <Route path='/admin/' element={<AdminPage />} /> 
-              <Route path='/admin/dashboard' element={<Dashboard />} />    
-              <Route path='/admin/forums' element={<AdminForums />} />
-              <Route path='/admin/threads' element={<AdminThreads />} />  
-              <Route path='/admin/comments' element={<AdminComments />} />  
-              <Route path='/admin/forums/:forumId/threads/' element={<AdminThreads />} />  
-              <Route path='/admin/forums/:forumId/threads/:threadId/comments' element={<AdminComments />} />
-              <Route path='/admin/users' element={<AdminUsers />} /> 
-              <Route path='/admin/users/:userId' element={<AdminUsers />} /> 
-              <Route path='/admin/reports' element={<AdminReports />} />   
+              <Route path='/admin/' element={<AdminPage />}> 
+                <Route path='/admin/dashboard' element={<Dashboard />} />    
+                <Route path='/admin/forums' element={<AdminForums />} />
+                <Route path='/admin/:forumId/threads/' element={<AdminThreads />} />
+                <Route path='/admin/:forumId/:threadId/' element={<PostProvider>
+                    <AdminComments />
+                  </PostProvider>} />
+                <Route path='/admin/users' element={<AdminUsers />} /> 
+                <Route path='/admin/users/:userId' element={<AdminUsers />} /> 
+                <Route path='/admin/reports' element={<AdminReports />} /> 
+              </Route> 
             </Route>
           </Route>
 
@@ -52,8 +52,13 @@ const App = () => {
           <Route path="/unauthorized" element={<Unauthorized />}/>
           <Route path="*" element={<Missing />}/>
         </Route> 
-    </Routes>
-    
+  )
+)
+
+
+const App = () => {
+  return (
+    <RouterProvider router={router} />
   )
 }
 

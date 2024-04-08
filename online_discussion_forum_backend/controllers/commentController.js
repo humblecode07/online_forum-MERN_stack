@@ -38,15 +38,20 @@ exports.comment_get_one = asyncHandler(async (req, res, next) => {
 
 /* Create a comment on a certain thread */
 exports.comment_create = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.userData.userId);
+    const user = await User.findById(req.userId);
+    let images = [];
+
+    if (req.files && req.files.length > 0) images = req.files.map(file => file.path);
 
     const comment = new Comment({
         _id: new mongoose.Types.ObjectId(),
         user: user._id,
         username: user.user_name,
-        forumPost: req.params.forumId,
+        forumPost: req.forumId,
         threadPost: req.threadId,
-        content: req.body.content
+        parentId: null,
+        content: req.body.content,
+        image: images
     });
 
     await comment.save();
@@ -64,12 +69,62 @@ exports.comment_create = asyncHandler(async (req, res, next) => {
     })
 });
 
+
+exports.reply_create = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.userId);
+    const commentParent = await Comment.findById(req.params.commentId);
+    
+    let images = [];
+
+    if (req.files && req.files.length > 0) images = req.files.map(file => file.path);
+
+    const comment = new Comment({
+        _id: new mongoose.Types.ObjectId(),
+        user: user._id,
+        username: user.user_name,
+        forumPost: req.forumId,
+        threadPost: req.threadId,
+        parentId: commentParent._id,
+        content: req.body.content,
+        image: images
+    });
+
+    await comment.save();
+
+    await Thread.findByIdAndUpdate(req.threadId, 
+        { 
+            $push: { comments: comment._id }, 
+            $inc: { commentCount: 1}
+        }, 
+        { new: true }
+    );
+
+    await Comment.findByIdAndUpdate(req.params.commentId, 
+        {
+            $push: { replies: comment._id }, 
+            $inc: { commentCount: 1}
+        },  
+        { new: true }
+    );
+
+    return res.status(200).json({
+        message: "Comment has been created",
+    })
+})
+
 /* Update a comment on a certain thread */
 exports.comment_update = asyncHandler(async (req, res, next) => {
     const commentId = req.params.commentId;
 
+    if (req.files && req.files.length > 0) {
+        const images = req.files.map(file => file.path);
+
+        req.body.image = images;
+    }
+
     const updatedComment = await Comment.findByIdAndUpdate(commentId, {
-        $set: req.body, editedAt: Date.now()
+        $set: req.body, 
+        editedAt: Date.now()
     }, { new: true });
 
     if (!updatedComment) {

@@ -1,6 +1,32 @@
 const express = require('express');
 const comment_controller = require('../controllers/commentController');
 const checkAuth = require('../middleware/check-auth');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true);
+    } else {
+        cb(new Error('Only JPEG and PNG files are allowed'), false);
+    }
+}
+
+const upload = multer({
+    storage: storage, 
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
 
 const router = express.Router();
 
@@ -11,10 +37,13 @@ router.get('/', comment_controller.comment_get_all);
 router.get('/:commentId', comment_controller.comment_get_one);
 
 /* POST request for creating a comment on a thread */
-router.post('/', checkAuth, comment_controller.comment_create);
+router.post('/', upload.array('image'), comment_controller.comment_create);
+
+/* POST request for creating a reply on a comment */
+router.post('/:commentId', upload.array('image'), comment_controller.reply_create);
 
 /* PATCH request for updating a comment on a thread */
-router.patch('/:commentId', comment_controller.comment_update);
+router.patch('/:commentId', upload.array('image'), comment_controller.comment_update);
 
 /* DELETE request for deleting a comment on a thread */
 router.delete('/:commentId', comment_controller.comment_delete);

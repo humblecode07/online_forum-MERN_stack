@@ -10,8 +10,7 @@ const RequireAuth = ({ allowedRoles }) => {
 
     const roles = decoded?.roles || []
 
-    console.log("Auth role find: " + auth?.roles?.find(role => allowedRoles?.includes(role)))
-    // console.log("Allowed roles: " + allowedRoles)
+    console.log("Auth role find: ", roles)
 
     return (
         roles.find(role => allowedRoles?.includes(role))

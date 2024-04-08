@@ -16,7 +16,6 @@ const forumRouter = require('./routes/forum');
 const threadRouter = require('./routes/thread');
 const commentRouter = require('./routes/comment');
 
-
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -38,6 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static('uploads'))
 
 const extractForumId = (req, res, next) => {
   const { forumId } = req.params;
