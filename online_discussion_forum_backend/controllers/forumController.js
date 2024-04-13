@@ -36,10 +36,17 @@ exports.forum_get_one = asyncHandler(async (req, res, next) => {
 exports.forum_create = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.userId);
 
+    let image = '';
+
+    if (req.files.length > 0) {
+        image = req.files[0].path;
+    }
+
     const forum = new Forum({
         _id: new mongoose.Types.ObjectId(),
         user: user._id,
         name: req.body.name,
+        image: image,
         creator: user.first_name + " " + user.family_name,
         description: req.body.description,
         creationTime: req.body.creationTime,
@@ -55,6 +62,13 @@ exports.forum_create = asyncHandler(async (req, res, next) => {
 /* Edit forum detail */
 exports.forum_patch_info = asyncHandler(async (req, res, next) => {
     const { forumId } = req.params;
+
+    let image = '';
+
+    if (req.files.length > 0) {
+        image = req.files[0].path;
+        req.body.image = image;
+    }
 
     const updatedForum = await Forum.findByIdAndUpdate({ _id: forumId }, {
         $set: req.body, editedAt: Date.now()

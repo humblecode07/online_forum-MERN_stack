@@ -7,6 +7,7 @@ const forumsSchema = new Schema({
     name: { type: String, required: true },
     creator: { type: String, required: true },
     description: { type: String, required: true },
+    image: { type: String },
     creationTime: { type: Date, default: Date.now },
     threads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Threads' }],
     editedAt: { type: Date },

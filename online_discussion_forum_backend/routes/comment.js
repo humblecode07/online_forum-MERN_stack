@@ -1,6 +1,5 @@
 const express = require('express');
 const comment_controller = require('../controllers/commentController');
-const checkAuth = require('../middleware/check-auth');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
@@ -47,5 +46,8 @@ router.patch('/:commentId', upload.array('image'), comment_controller.comment_up
 
 /* DELETE request for deleting a comment on a thread */
 router.delete('/:commentId', comment_controller.comment_delete);
+
+/* Upvote or Dowvote: UPDATE request for comment */
+router.patch('/:commentId/vote', comment_controller.comment_vote);
 
 module.exports = router;

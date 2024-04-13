@@ -8,14 +8,17 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 600,
+    maxHeight: 700,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
+    overflowY: 'auto',
+    overflowX: 'hidden'
 };
 
-const CreateThreads = () => {
+const CreateThreads = ({ threadTitle, threadContent, edit }) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -31,7 +34,7 @@ const CreateThreads = () => {
 
     const { forumId } = useParams();
 
-    console.log("this is the forum id: " + forumId); 
+    console.log("this is the forum id: " + forumId);
 
     const postThread = async () => {
         const formData = new FormData();
@@ -75,31 +78,89 @@ const CreateThreads = () => {
                 onClose={handleClose}
             >
                 <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Create Thread
-                    </Typography>
-                    <TextField
-                        id="outlined-basic"
-                        label="Thread Title"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ mt: 2 }}
-                        value={threadName}
-                        onChange={(e) => setThreadName(e.target.value)}
-                    />
-                    <TextField
-                        id="outlined-basic"
-                        label="Content"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ mt: 2 }}
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                    />
-                    <div>
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginBottom: '20px'
+                    }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Create Thread
+                        </Typography>
+                    </Box>
+                    <Box sx={{
+                        maxHeight: '60vh', // Adjusted to use vh unit instead of dvh
+                    }}>
+                        <TextField
+                            id="outlined-basic"
+                            label="Thread Title"
+                            variant="outlined"
+                            fullWidth
+                            multiline
+                            maxRows={4}
+                            sx={{
+                                '& .MuiFormLabel-root': {
+                                    fontSize: '0.9rem',
+                                },
+                                marginRight: '25dvw',
+                                marginBottom: '20px',
+                                maxHeight: '60vh',
+                            }}
+                            InputProps={{
+                                sx: {
+                                    '& input': {
+                                        maxHeight: '100%',
+                                        borderRadius: '25px',
+                                    },
+                                    borderRadius: '25px',
+
+                                }
+                            }}
+                            value={threadName}
+                            onChange={(e) => setThreadName(e.target.value)}
+                        />
+                    </Box>
+                    <Box sx={{
+                        maxHeight: '60vh',
+                        marginBottom: '20px'
+                    }}>
+                        <TextField
+                            id="outlined-basic"
+                            label="Content"
+                            variant="outlined"
+                            fullWidth
+                            multiline
+                            maxRows={10}
+                            sx={{
+                                '& .MuiFormLabel-root': {
+                                    fontSize: '0.9rem',
+                                },
+                                marginRight: '25dvw',
+                                marginBottom: '20px',
+                                maxHeight: '60vh',
+                            }}
+                            InputProps={{
+                                sx: {
+                                    '& input': {
+                                        maxHeight: '100%',
+                                        borderRadius: '25px',
+                                    },
+                                    borderRadius: '25px',
+
+                                }
+                            }}
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                        />
+                    </Box>
+
+                    <div style={{
+                        marginBottom: '20px'
+                    }}>
                         <input type="file" multiple onChange={handleFileChange} />
                     </div>
-                    <Button onClick={postThread} variant='contained'>Submit</Button>
+                    <Button onClick={postThread} variant='contained' sx={{
+                        width: '100%'
+                    }}>Post</Button>
                 </Box>
             </Modal>
         </>

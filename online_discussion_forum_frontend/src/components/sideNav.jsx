@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, Grid, Stack, Typography, Avatar } from '@mui/material'
 import { styled } from '@mui/system';
 import ForumIcon from '@mui/icons-material/Forum';
@@ -11,6 +11,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 import firefly from '../pages/image/firefly.png'
 import { NavLink, useNavigate } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
+import { jwtDecode } from 'jwt-decode'
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
 const SidebarButton = ({ to, text, ...rest }) => {
     return (
@@ -21,8 +24,32 @@ const SidebarButton = ({ to, text, ...rest }) => {
 };
 
 const SideNav = () => {
-    const [selected, setSelected] = useState();
-    const navigate = useNavigate();
+    const { auth } = useAuth()
+    const axiosPrivate = useAxiosPrivate()
+
+    const [userData, setUserData] = useState(null);
+
+    const decoded = auth?.accessToken ? jwtDecode(auth.accessToken) : undefined
+
+    const getAdmin = async () => {
+        try {
+            const response = await axiosPrivate.get(`/users/${decoded.userId}/`, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            })
+            const fetchedUserData = response.data;
+            setUserData(fetchedUserData);
+        }
+        catch (err) {
+            console.error('Error fetching user data:', err);
+        }
+    }
+
+    useEffect(() => {
+        if (decoded?.userId) {
+            getAdmin(); // Fetch user data when the component mounts and whenever decoded.userId changes
+        }
+    }, [decoded?.userId]);
 
     return (
         <Box
@@ -47,14 +74,17 @@ const SideNav = () => {
                     <IconButton aria-label="minimize side-nav"><MenuIcon /></IconButton>
                 </Stack>
                 <Avatar sx={{ width: 100, height: 100, bgcolor: 'primary.main' }}>
-                    <img src={firefly} alt="Firefly" style={{ borderRadius: '50%' }} />
+                    {userData && userData.user && userData.user.length > 0 && (
+                        <img src={`http://localhost:3000/${userData.user[0].profile}`} alt="Firefly" style={{ borderRadius: '50%' }} />
+                    )}
                 </Avatar>
                 <Typography variant="h3" sx={{
                     paddingTop: '12px',
                     fontFamily: 'Roboto',
                     fontSize: '25px',
                     fontWeight: 1000,
-                }}>Firefly</Typography>
+                }}>{userData && userData.user && userData.user.length > 0 && (userData.user[0].first_name + ' ' + userData.user[0].family_name
+                )}</Typography>
                 <Typography variant="body1">
                     Admin
                 </Typography>

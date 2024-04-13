@@ -66,13 +66,14 @@ const Threads = () => {
       display={'flex'}
       flexDirection={'column'}
     >
-      <Stack direction={'row'} justifyContent={'space-between'} sx={{
+      <Stack direction={'row'} justifyContent={'flex-start'} sx={{
         marginRight: '50px',
         marginBottom: '20px'
       }}>
         <Typography variant="h5" sx={{
           fontWeight: '700',
           fontSize: '30px',
+          paddingRight: '60%'
         }}>Threads List</Typography>
         <CreateThreads />
       </Stack>

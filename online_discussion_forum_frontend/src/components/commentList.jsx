@@ -1,17 +1,29 @@
 import { Comment } from "./commentsForPage"
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 export function CommentList({ comments }) {
+    const NoCommentsMessage = () => (
+      <Box paddingTop={15} paddingBottom={15} paddingLeft={30}>
+        <Typography variant="h6" color="textSecondary">
+          Oops! No comments yet.
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
+          Be the first one to share your thoughts.
+        </Typography>
+      </Box>
+    );
+    
+    // Inside your component or function
     if (!comments || comments.length === 0) {
-      return <div>No comments to display</div>; // Render a message if comments are undefined or empty
+      return <NoCommentsMessage />;
     }
-  
+
     return (
       <>
         {comments.map(comment => (
-          <Box key={comment._id}>
+          <div key={comment._id} className="comment-stack">
             <Comment {...comment} />
-          </Box>
+          </div>
         ))}
       </>
     );

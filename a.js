@@ -1,32 +1,4 @@
-import React, { useEffect } from 'react'
-import { useAsync } from '../hooks/useAsync'
-import { getPost } from '../services/posts/'
-import { useParams } from 'react-router-dom';
+const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhbGRlcm9uLm1pa28uMDAxNDlAZHljaS5lZHUucGgiLCJyb2xlcyI6WyJBZG1pbiIsIlN0dWRlbnQiXSwidXNlcklkIjoiNjVlZDc3OWYxOTZjYmM5ZDgwMzIzOTk2IiwiaWF0IjoxNzEyNzk3MzE1LCJleHAiOjE3MTI5NzAxMTV9.in4vaP69FQQqYAZCr89VatCSQLx0fG-Uefs-h9aeAng";
 
-const Context = React.createContext()
-
-export function usePost() {
-    return useContext(Context)
-}
-
-export function PostProvider({ children }) {
-    const { id } = useParams()
-    const { loading, error, value: post} = useAsync(() => getPost(id), [id])
-
-    return (
-        <Context.Provider value={{}}
-            value={{
-                post: { id, ...post },
-            }}
-        >
-            {loading ? (
-                <h1>Loading</h1>
-            ) : error ? (
-                <h1>{error}</h1>
-            ) : (
-                children
-            )}
-        </Context.Provider>
-    )
-    
-}
+const decodedPayload = JSON.parse(atob(jwt.split('.')[1]));
+console.log(decodedPayload);

@@ -7,11 +7,14 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 600,
+    maxHeight: 700,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
+    overflowY: 'auto',
+    overflowX: 'hidden'
 };
 
 const CreateForum = () => {
@@ -22,33 +25,39 @@ const CreateForum = () => {
     const axiosPrivate = useAxiosPrivate();
     const [forumName, setForumName] = useState("");
     const [description, setDescription] = useState("");
+    const [selectedFiles, setSelectedFiles] = useState([]);
+
+    const handleFileChange = (event) => {
+        setSelectedFiles([...selectedFiles, ...event.target.files]);
+    };
 
     const postForum = async () => {
+        const formData = new FormData();
+
+        formData.append('name', forumName);
+        formData.append('description', description);
+
+        selectedFiles.forEach((file) => {
+            formData.append('image', file);
+        });
+
         try {
-            const response = await axiosPrivate.post('/forums',
-                JSON.stringify({
-                    name: forumName,
-                    description: description
-                }), {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true
+            const response = await axiosPrivate.post('/forums', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
-            console.log(response.data); // log the response if needed
-            handleClose(); // close the modal after successful submission
+            console.log(response.data);
+            handleClose();
+            window.location.reload()
         } catch (error) {
             if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
                 console.log(error.response.data);
                 console.log(error.response.status);
                 console.log(error.response.headers);
             } else if (error.request) {
-                // The request was made but no response was received
-                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                // http.ClientRequest in node.js
                 console.log(error.request);
             } else {
-                // Something happened in setting up the request that triggered an Error
                 console.log('Error', error.message);
             }
             console.log(error.config);
@@ -65,28 +74,83 @@ const CreateForum = () => {
                 onClose={handleClose}
             >
                 <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Create Forum
-                    </Typography>
-                    <TextField
-                        id="outlined-basic"
-                        label="Forum Name"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ mt: 2 }}
-                        value={forumName}
-                        onChange={(e) => setForumName(e.target.value)}
-                    />
-                    <TextField
-                        id="outlined-basic"
-                        label="Description"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ mt: 2 }}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    />
-                    <Button onClick={postForum} variant='contained'>Submit</Button>
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginBottom: '20px'
+                    }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Create Forum
+                        </Typography>
+                    </Box>
+                    <Box sx={{
+                        maxHeight: '60vh',
+                    }}>
+                        <TextField
+                            id="outlined-basic"
+                            label="Forum Name"
+                            variant="outlined"
+                            fullWidth
+                            multiline
+                            maxRows={4}
+                            sx={{
+                                '& .MuiFormLabel-root': {
+                                    fontSize: '0.9rem',
+                                },
+                                marginRight: '25dvw',
+                                marginBottom: '20px',
+                                maxHeight: '60vh',
+                            }}
+                            InputProps={{
+                                sx: {
+                                    '& input': {
+                                        maxHeight: '100%',
+                                        borderRadius: '25px',
+                                    },
+                                    borderRadius: '25px',
+
+                                }
+                            }}
+                            value={forumName}
+                            onChange={(e) => setForumName(e.target.value)}
+                        />
+                        <TextField
+                            id="outlined-basic"
+                            label="Description"
+                            variant="outlined"
+                            fullWidth
+                            multiline
+                            maxRows={4}
+                            sx={{
+                                '& .MuiFormLabel-root': {
+                                    fontSize: '0.9rem',
+                                },
+                                marginRight: '25dvw',
+                                marginBottom: '20px',
+                                maxHeight: '60vh',
+                            }}
+                            InputProps={{
+                                sx: {
+                                    '& input': {
+                                        maxHeight: '100%',
+                                        borderRadius: '25px',
+                                    },
+                                    borderRadius: '25px',
+
+                                }
+                            }}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </Box>
+                    <div style={{
+                        marginBottom: '20px'
+                    }}>
+                        <input type="file" multiple onChange={handleFileChange}/>
+                    </div>
+                    <Button onClick={postForum} variant='contained' sx={{
+                        width: '100%'
+                    }}>Create Forum</Button>
                 </Box>
             </Modal>
         </>

@@ -10,32 +10,26 @@ export function useAsync(func, dependencies = []) {
   return state
 }
 
-export function useAsyncFn(func, dependencies = []) {
-  return useAsyncInternal(func, dependencies, false)
-}
+export function useAsyncFn(asyncFunction, dependencies = []) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [value, setValue] = useState(null);
 
-function useAsyncInternal(func, dependencies, initialLoading = false) {
-  const [loading, setLoading] = useState(initialLoading)
-  const [error, setError] = useState()
-  const [value, setValue] = useState()
+  const execute = useCallback(async (...args) => {
+      setLoading(true);
+      setError(null);
+      setValue(null);
+      try {
+          const result = await asyncFunction(...args);
+          setValue(result);
+          return result;
+      } catch (e) {
+          setError(e);
+          throw e;
+      } finally {
+          setLoading(false);
+      }
+  }, [asyncFunction, ...dependencies]);
 
-  const execute = useCallback((...params) => {
-    setLoading(true)
-    return func(...params)
-      .then(data => {
-        setValue(data)
-        setError(undefined)
-        return data
-      })
-      .catch(error => {
-        setError(error)
-        setValue(undefined)
-        return Promise.reject(error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, dependencies)
-
-  return { loading, error, value, execute }
+  return [execute, { loading, error, value }];
 }

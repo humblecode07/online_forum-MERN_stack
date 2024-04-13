@@ -10,6 +10,7 @@ export function usePost() {
 
 export function PostProvider({ children }) {
     const [post, setPost] = useState(null);
+
     const [loading, setLoading] = useState(true); // Set loading to true initially
     const [error, setError] = useState(null);
     const { forumId, threadId } = useParams();
@@ -37,7 +38,6 @@ export function PostProvider({ children }) {
     console.log('commentsBy', commentsByParentId);
 
     function getReplies(parentId) {
-        console.log('getRepliescalled', parentId)
         return commentsByParentId[parentId]
     }
 
