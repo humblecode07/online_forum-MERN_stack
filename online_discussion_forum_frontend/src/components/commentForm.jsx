@@ -24,7 +24,7 @@ const CommentForm = ({
     const handleFileChange = (event) => setSelectedFiles([...selectedFiles, ...event.target.files]);
 
     const isSubmitDisabled = () => {
-        return !message.trim() && selectedFiles.length === 0; // Disable submit if message is empty and no files are selected
+        return !message.trim() && selectedFiles.length === 0;
     };
 
 

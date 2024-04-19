@@ -9,7 +9,6 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import firefly from '../pages/image/firefly.png'
 import { NavLink, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { jwtDecode } from 'jwt-decode'

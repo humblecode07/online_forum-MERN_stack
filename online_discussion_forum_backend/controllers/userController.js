@@ -23,7 +23,27 @@ exports.user_get = asyncHandler(async (req, res, next) => {
 /* Display specific user */
 exports.user_get_one = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
-    const user = await User.find({_id: userId}).exec();
+    const user = await User.find({ _id: userId })
+        .populate({
+            path: 'threads',
+            populate: {
+                path: 'comments',
+            }
+        })
+        .populate({
+            path: 'comments',
+            populate: [
+                {
+                    path: 'forumPost',
+                },
+                {
+                    path: 'threadPost'
+                }
+            ]
+        })
+        .populate('upvotedThreads')
+        .populate('downvotedThreads')
+        .exec();
 
     if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -62,7 +82,7 @@ exports.user_post_create = asyncHandler(async (req, res, next) => {
             officer: req.body.officer,
             role: req.body.role instanceof Array ? req.body.role : [req.body.role]
         });
-        
+
         const savedUser = await user.save();
         console.log(savedUser);
         return res.status(201).json({
@@ -79,7 +99,7 @@ exports.user_post_create = asyncHandler(async (req, res, next) => {
 exports.user_post_changepass = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
     const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(req.body.password, salt)
+    const hashPassword = await bcrypt.hash(req.body.pass, salt)
     const updatedPass = await User.findByIdAndUpdate({ _id: userId }, { pass: hashPassword }, { new: true })
 
     if (!updatedPass) {
@@ -94,12 +114,17 @@ exports.user_post_changepass = asyncHandler(async (req, res, next) => {
 /* Update user's info*/
 exports.user_patch_info = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
-    const profileImage = req.file.path;
+
+    // Check if req.file exists and contains the path property
+    const profileImage = req.file ? req.file.path : undefined;
 
     const userDataToUpdate = { ...req.body };
     delete userDataToUpdate.profileImage;
 
-    userDataToUpdate.profile = profileImage;
+    // If profileImage is defined, update the profile field
+    if (profileImage) {
+        userDataToUpdate.profile = profileImage;
+    }
 
     const updatedUser = await User.findByIdAndUpdate(userId, { $set: userDataToUpdate }, { new: true });
 
@@ -112,6 +137,7 @@ exports.user_patch_info = asyncHandler(async (req, res, next) => {
         user: updatedUser
     });
 });
+
 
 /* Delete user account*/
 exports.user_delete = asyncHandler(async (req, res, next) => {

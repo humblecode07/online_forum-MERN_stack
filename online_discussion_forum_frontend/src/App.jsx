@@ -3,12 +3,15 @@ import { Route, NavLink, createBrowserRouter, createRoutesFromElements, RouterPr
 import RootLayout from './layouts/RootLayout';
 
 import Layout from './pages/Layout';
-import RequireAuth from './pages/AdminSide/AdminRequireAuth';
+import RequireAuth from './pages/RequireAuth';
 import PersistLogin from './pages/PersistLogin';
 
 import Home from './pages/UserSide/Home';
 import Login from './pages/UserSide/Login';
-import ComSci from './pages/UserSide/Forums/ComSci';
+import StudentPage from './pages/UserSide/StudentPage';
+import StudentSettings from './pages/AdminSide/StudentSettings';
+import StudentThreads from './pages/UserSide/StudentThreads';
+import StudentComments from './pages/UserSide/StudentComments';
 
 import AuthLogin from './pages/AdminSide/AuthLogin';
 import AdminPage from './pages/AdminSide/AdminPage';
@@ -18,6 +21,7 @@ import AdminThreads from './pages/AdminSide/Threads';
 import AdminComments from './pages/AdminSide/Comments';
 import AdminUsers from './pages/AdminSide/Users'
 import AdminReports from './pages/AdminSide/Reports';
+import Students from './pages/AdminSide/Students';
 
 import Missing from './pages/Missing';
 import Unauthorized from './pages/Unauthorized';
@@ -25,33 +29,47 @@ import { PostProvider } from './context/PostContext';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-        <Route path="/" element={<RootLayout />}>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/admin/login' element={ <AuthLogin />} />  
-          <Route path='/forums/65ed796cd86faed84a62706e' element={<ComSci />} />
+    <Route path="/" element={<RootLayout />}>
+      <Route path='/' element={<Home />} />
+      <Route path='/login' element={<Login />} />
+      <Route path='/admin/login' element={<AuthLogin />} />
 
-          {/* Admin */}
-          <Route element={<PersistLogin />}>
-            <Route element ={<RequireAuth allowedRoles={["Admin"]}/>}>
-              <Route path='/admin/' element={<AdminPage />}> 
-                <Route path='/admin/dashboard' element={<Dashboard />} />    
-                <Route path='/admin/forums' element={<AdminForums />} />
-                <Route path='/admin/:forumId/threads/' element={<AdminThreads />} />
-                <Route path='/admin/:forumId/:threadId/' element={<PostProvider>
-                    <AdminComments />
-                  </PostProvider>} />
-                <Route path='/admin/users' element={<AdminUsers />} /> 
-                <Route path='/admin/users/:userId' element={<AdminUsers />} /> 
-                <Route path='/admin/reports' element={<AdminReports />} /> 
-              </Route> 
-            </Route>
+      {/* Student */}
+      <Route element={<PersistLogin />}>
+        <Route element={<RequireAuth allowedRoles={["Student"]} />}>
+          <Route path='/client/' element={<StudentPage />}>
+            <Route path='/client/:forumId' element={<StudentThreads />}/>
+            <Route path='/client/:forumId/:threadId/' element={<PostProvider>
+              <StudentComments />
+            </PostProvider>} />
+            <Route path='/client/user/:studentId' element={<Students />}/>
+            <Route path='/client/:studentId/settings' element={<StudentSettings />} />
           </Route>
+        </Route>
+      </Route>
 
-          {/* Missing  and Unauthorized*/}
-          <Route path="/unauthorized" element={<Unauthorized />}/>
-          <Route path="*" element={<Missing />}/>
-        </Route> 
+      {/* Admin */}
+      <Route element={<PersistLogin />}>
+        <Route element={<RequireAuth allowedRoles={["Admin"]} />}>
+          <Route path='/admin/' element={<AdminPage />}>
+            <Route path='/admin/dashboard' element={<Dashboard />} />
+            <Route path='/admin/forums' element={<AdminForums />} />
+            <Route path='/admin/:forumId/threads/' element={<AdminThreads />} />
+            <Route path='/admin/:forumId/:threadId/' element={<PostProvider>
+              <AdminComments />
+            </PostProvider>} />
+            <Route path='/admin/users' element={<AdminUsers />} />
+            <Route path='/admin/:studentId' element={<Students />} />
+            <Route path='/admin/:studentId/settings' element={<StudentSettings />} />
+            <Route path='/admin/reports' element={<AdminReports />} />
+          </Route>
+        </Route>
+      </Route>
+
+      {/* Missing  and Unauthorized*/}
+      <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="*" element={<Missing />} />
+    </Route>
   )
 )
 

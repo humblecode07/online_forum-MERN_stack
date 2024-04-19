@@ -12,6 +12,7 @@ const indexRouter = require('./routes/index');
 const refreshRouter = require('./routes/refreshToken');
 const logoutRouter = require('./routes/logout');
 const userRouter = require('./routes/user');
+const instructorRouter = require('./routes/instructor')
 const forumRouter = require('./routes/forum');
 const threadRouter = require('./routes/thread');
 const commentRouter = require('./routes/comment');
@@ -57,6 +58,7 @@ app.use('/logout', logoutRouter);
 
 app.use(checkAuth);
 app.use('/users', userRouter)
+app.use('/instructors', instructorRouter)
 app.use('/forums', forumRouter)
 app.use('/forums/:forumId/threads', extractForumId, threadRouter)
 app.use('/forums/:forumId/threads/:threadId/comments', extractThreadId, commentRouter)

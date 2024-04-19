@@ -67,6 +67,11 @@ exports.comment_create = asyncHandler(async (req, res, next) => {
         { new: true }
     );
 
+    await User.findByIdAndUpdate(req.userId, 
+        { $push: { comments: comment._id } }, 
+        { new: true }
+    )
+
     return res.status(200).json({
         message: "Comment has been created",
     })
@@ -109,6 +114,13 @@ exports.reply_create = asyncHandler(async (req, res, next) => {
         {
             $push: { replies: comment._id },
             $inc: { commentCount: 1 }
+        },
+        { new: true }
+    );
+
+    await User.findByIdAndUpdate(req.userId,
+        {
+            $push: { comments: comment._id },
         },
         { new: true }
     );
@@ -164,11 +176,18 @@ exports.comment_delete = asyncHandler(async (req, res, next) => {
                 { $pull: { replies: commentId }, $inc: { commentCount: -1 } },
                 { new: true }
             );
+            await User.findByIdAndUpdate(req.userId,
+                { $pull: { comments: commentId } },
+                { new: true }
+            );
         }
         // Remove the comment from its parent's replies array
         if (comment.parentId) {
             await Comment.findByIdAndUpdate(comment.parentId, {
                 $pull: { replies: commentId }
+            });
+            await User.findByIdAndUpdate(req.userId, {
+                $pull: { comments: commentId }
             });
         }
     };
@@ -180,6 +199,11 @@ exports.comment_delete = asyncHandler(async (req, res, next) => {
     // Remove the comment from the thread's replies array and update replyCount
     await Thread.findByIdAndUpdate(threadId,
         { $pull: { replies: commentId }, $inc: { commentCount: -1 } },
+        { new: true }
+    );
+
+    await User.findByIdAndUpdate(req.userId,
+        { $pull: { comments: commentId } },
         { new: true }
     );
 

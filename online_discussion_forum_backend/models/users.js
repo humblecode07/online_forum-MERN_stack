@@ -16,8 +16,12 @@ const accountSchema = new Schema({
     sex: { type: String, required: true },
     department: { type: String, required: true },
     year_level: { type: String, required: true },
-    officer: { type: String, required: true },
+    officer: { type: mongoose.Schema.Types.ObjectId, ref: 'Instructors' },
     role: [{ type: String, required: true }],
+    threads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Threads' }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comments' }],
+    upvotedThreads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Threads' }],
+    downvotedThreads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Threads' }],
     refreshToken: { type: String }
 });
 

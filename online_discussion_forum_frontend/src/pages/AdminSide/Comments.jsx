@@ -13,7 +13,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { usePost } from '../../context/PostContext';
 import { CommentList } from '../../components/commentList';
 import CommentForm from '../../components/commentForm';
-
 const style = {
   position: 'absolute',
   top: '50%',
@@ -103,9 +102,6 @@ const Comments = () => {
     setAnchorEl(null);
   };
 
-  console.log(threadTitle)
-  console.log(threadContent)
-
   const editThread = async () => {
     const formData = new FormData();
 
@@ -141,145 +137,143 @@ const Comments = () => {
 
   const deleteThread = async () => {
     try {
-        const response = await axiosPrivate.delete(`/forums/${forumId}/threads/${thread._id}`);
-        console.log(response.data);
-        handleCloseModalDelete(); 
-        navigate(`/admin/${forumId}/threads`)
+      const response = await axiosPrivate.delete(`/forums/${forumId}/threads/${thread._id}`);
+      console.log(response.data);
+      handleCloseModalDelete();
+      navigate(`/admin/${forumId}/threads`)
     } catch (error) {
-        if (error.response) {
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
-        } else if (error.request) {
-            console.log(error.request);
-        } else {
-            console.log('Error', error.message);
-        }
-        console.log(error.config);
+      if (error.response) {
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        console.log(error.request);
+      } else {
+        console.log('Error', error.message);
+      }
+      console.log(error.config);
     }
-};
+  };
 
   return (
     <div>
-      <Box width={'55dvw'}>
-        <Box display={'flex'} flexDirection={'row'}>
-          <Box width={'55dvw'}>
-            <Stack direction={'row'} sx={{
-              color: 'hsl(235, 50%, 67%)',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              gap: '1%',
-              alignItems: 'center',
-              fontSize: '.75em'
-            }}>
-              <Typography fontSize={'14px'}>f/{thread.forumPost.name} </Typography>
-              <Typography fontSize={'14px'}>{thread.edited ? 'edited' : null}</Typography>
-              <Typography fontSize={'14px'}>• {timeOfPost}</Typography>
-            </Stack>
-            <Stack direction={'row'} sx={{
-              color: 'hsl(235, 50%, 67%)',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              gap: '1%',
-              alignItems: 'center',
-              marginBottom: '.75rem',
-              fontSize: '.75em'
-            }}>
-              <Typography fontSize={'14px'}>{thread.username} </Typography>
-            </Stack>
-          </Box>
-          <Box>
-            <IconButton aria-label="more" color="primary" onClick={handleClick}>
-              <MoreHorizIcon />
-            </IconButton>
-            <Menu
-              id="options-menu"
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                  setIsEditing(true);
-                  handleOpenModalEdit();
-                }}
-                selected={isEditing}
-              >Edit</MenuItem>
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                  setIsDelete(true); // Set isDelete to true to open the modal
-                  handleOpenModalDelete(); // Open the modal
-                }}
-
-              >Delete</MenuItem>
-              <MenuItem onClick={handleClose}>Report</MenuItem>
-            </Menu>
-          </Box>
-        </Box>
-        <Box marginBottom={'20px'}>
-          <Typography fontSize={'22px'} fontWeight={'700'} marginBottom={'20px'}>{thread.title}</Typography>
-          <Typography fontSize={'14px'}>{thread.content}</Typography>
-        </Box>
-        <Box marginBottom={'10px'}>
-          {thread.image.length > 1 ? <Carousel navButtonsAlwaysVisible={true}
-            navButtonsAlwaysInvisible={false} cycleNavigation={true}
-            fullHeightHover={false} autoPlay={false} animation="slide" sx={{
-              maxWidth: "600px",
-            }}>
-            {thread.image && thread.image.map((imageUrl, index) => (
-              <CardMedia
-                key={index}
-                component="img"
-                style={{ borderRadius: '30px', height: 'auto', width: '75%', objectFit: 'cover', marginRight: '20px' }}
-                image={`http://localhost:3000/${imageUrl}`}
-                alt={`Image ${index + 1}`}
-              />
-            ))}
-          </Carousel> :
-            <Box>
-              {thread.image.length === 1 ? <CardMedia
-                component="img"
-                style={{ borderRadius: '30px', height: 'auto', width: '75%', objectFit: 'cover', marginRight: '20px' }}
-                image={`http://localhost:3000/${thread.image[0]}`}
-                alt={`Image`}
-              /> : ''}
+      {thread ? (
+        <Box width={'55dvw'}>
+          <Box display={'flex'} flexDirection={'row'}>
+            <Box width={'55dvw'}>
+              <Stack direction={'row'} sx={{
+                color: 'hsl(235, 50%, 67%)',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                gap: '1%',
+                alignItems: 'center',
+                fontSize: '.75em'
+              }}>
+                <Typography fontSize={'14px'}>f/{thread.forumPost.name} </Typography>
+                <Typography fontSize={'14px'}>{thread.edited ? 'edited' : null}</Typography>
+                <Typography fontSize={'14px'}>• {timeOfPost}</Typography>
+              </Stack>
+              <Stack direction={'row'} sx={{
+                color: 'hsl(235, 50%, 67%)',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                gap: '1%',
+                alignItems: 'center',
+                marginBottom: '.75rem',
+                fontSize: '.75em'
+              }}>
+                <Typography fontSize={'14px'}>{thread.username} </Typography>
+              </Stack>
             </Box>
-          }
+            <Box>
+              <IconButton aria-label="more" color="primary" onClick={handleClick}>
+                <MoreHorizIcon />
+              </IconButton>
+              <Menu
+                id="options-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    setIsEditing(true);
+                    handleOpenModalEdit();
+                  }}
+                  selected={isEditing}
+                >Edit</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    setIsDelete(true); // Set isDelete to true to open the modal
+                    handleOpenModalDelete(); // Open the modal
+                  }}
+
+                >Delete</MenuItem>
+                <MenuItem onClick={handleClose}>Report</MenuItem>
+              </Menu>
+            </Box>
+          </Box>
+          <Box marginBottom={'20px'}>
+            <Typography fontSize={'22px'} fontWeight={'700'} marginBottom={'20px'}>{thread.title}</Typography>
+            <Typography fontSize={'14px'}>{thread.content}</Typography>
+          </Box>
+          <Box marginBottom={'10px'}>
+            {thread.image.length > 1 ? <Carousel navButtonsAlwaysVisible={true}
+              navButtonsAlwaysInvisible={false} cycleNavigation={true}
+              fullHeightHover={false} autoPlay={false} animation="slide" sx={{
+                maxWidth: "600px",
+              }}>
+              {thread.image && thread.image.map((imageUrl, index) => (
+                <CardMedia
+                  key={index}
+                  component="img"
+                  style={{ borderRadius: '30px', height: 'auto', width: '75%', objectFit: 'cover', marginRight: '20px' }}
+                  image={`http://localhost:3000/${imageUrl}`}
+                  alt={`Image ${index + 1}`}
+                />
+              ))}
+            </Carousel> :
+              <Box>
+                {thread.image.length === 1 ? <CardMedia
+                  component="img"
+                  style={{ borderRadius: '30px', height: 'auto', width: '75%', objectFit: 'cover', marginRight: '20px' }}
+                  image={`http://localhost:3000/${thread.image[0]}`}
+                  alt={`Image`}
+                /> : ''}
+              </Box>
+            }
+          </Box>
+          <Stack direction={'row'} spacing={2}>
+            <Button onClick={(e) => {
+              e.stopPropagation();
+              handleVote(thread._id, 'upvote');
+            }} startIcon={<ThumbUpOffAltIcon />} sx={{
+              color: '#1976d2',
+              '&:hover': {
+                bgcolor: 'transparent',
+                color: '#1976d2'
+              }
+            }}><Typography>{thread.upvotes}</Typography></Button> {/* Prevent navigation */}
+            <Button onClick={(e) => {
+              e.stopPropagation();
+              handleVote(thread._id, 'downvote');
+            }} startIcon={<ThumbDownOffAltIcon />} sx={{
+              color: '#b01527',
+              '&:hover': {
+                bgcolor: 'b01527',
+                color: '#b01527'
+              }
+            }}><Typography>{thread.downvotes}</Typography></Button> {/* Prevent navigation */}
+            <Button startIcon={<CommentIcon />}><Typography>{thread.commentCount}</Typography></Button>
+            <Button startIcon={<VisibilityIcon />}><Typography>{thread.viewCount}</Typography></Button>
+          </Stack>
         </Box>
-        <Stack direction={'row'} spacing={2}>
-          <Button onClick={(e) => {
-            e.stopPropagation();
-            handleVote(thread._id, 'upvote');
-          }} startIcon={<ThumbUpOffAltIcon />} sx={{
-            color: '#1976d2',
-            '&:hover': {
-              bgcolor: 'transparent',
-              color: '#1976d2'
-            }
-          }}><Typography>{thread.upvotes}</Typography></Button> {/* Prevent navigation */}
-          <Button onClick={(e) => {
-            e.stopPropagation();
-            handleVote(thread._id, 'downvote');
-          }} startIcon={<ThumbDownOffAltIcon />} sx={{
-            color: '#b01527',
-            '&:hover': {
-              bgcolor: 'b01527',
-              color: '#b01527'
-            }
-          }}><Typography>{thread.downvotes}</Typography></Button> {/* Prevent navigation */}
-          <Button startIcon={<CommentIcon />}><Typography>{thread.commentCount}</Typography></Button>
-          <Button startIcon={<VisibilityIcon />}><Typography>{thread.viewCount}</Typography></Button>
-        </Stack>
-      </Box>
-      <CommentForm />
-      {(
-        <div className="mt-4">
-          <CommentList comments={rootComments} />
-        </div>
+      ) : (
+        <div>Loading...</div>
       )}
-      {isEditing &&
+      {isEditing && (
         <Modal
           open={openEdit}
           onClose={handleCloseModalEdit}
@@ -359,37 +353,44 @@ const Comments = () => {
               width: '100%'
             }} onClick={editThread}>Submit</Button>
           </Box>
-        </Modal>}
-        {isDelete && (
-                <>
-                    <Modal
-                        open={openDelete}
-                        onClose={handleCloseModalDelete}
-                    >
-                        <Box sx={style}>
-                            <Typography id="modal-modal-title" variant="h6" component="h2" marginBottom={'10px'}>
-                                Delete Thread?
-                            </Typography>
-                            <Typography id="modal-modal-title" marginBottom={'30px'}>
-                                Once you delete this post, it can’t be restored.
-                            </Typography>
-                            <Box display={'flex'} flexDirection={'row'} justifyContent={'flex-end'} gap={1}>
-                                <Button onClick={handleCloseModalDelete} variant='contained' sx={{
-                                    borderRadius: '20px'
-                                }}>
-                                    No {'>:('}
-                                </Button>
-                                <Button onClick={deleteThread} variant='contained' sx={{
-                                    borderRadius: '20px'
-                                }}>
-                                    Yes, Delete
-                                </Button>
-                            </Box>
+        </Modal>
+      )}
+      {isDelete && (
+        <>
+          <Modal
+            open={openDelete}
+            onClose={handleCloseModalDelete}
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2" marginBottom={'10px'}>
+                Delete Thread?
+              </Typography>
+              <Typography id="modal-modal-title" marginBottom={'30px'}>
+                Once you delete this post, it can’t be restored.
+              </Typography>
+              <Box display={'flex'} flexDirection={'row'} justifyContent={'flex-end'} gap={1}>
+                <Button onClick={handleCloseModalDelete} variant='contained' sx={{
+                  borderRadius: '20px'
+                }}>
+                  No {'>:('}
+                </Button>
+                <Button onClick={deleteThread} variant='contained' sx={{
+                  borderRadius: '20px'
+                }}>
+                  Yes, Delete
+                </Button>
+              </Box>
 
-                        </Box>
-                    </Modal>
-                </>
-            )}
+            </Box>
+          </Modal>
+        </>
+      )}
+      <CommentForm />
+      {(
+        <div className="mt-4">
+          <CommentList comments={rootComments} />
+        </div>
+      )}
     </div>
   );
 }

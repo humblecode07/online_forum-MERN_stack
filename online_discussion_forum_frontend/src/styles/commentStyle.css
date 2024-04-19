@@ -34,6 +34,41 @@ button {
   gap: .5rem;
 }
 
+.title-input {
+  flex-grow: 1;
+  height: 70px;
+  border-top-left-radius: .5em;
+  border-top-right-radius: .5em;
+  padding: .5em;
+  font-size: inherit;
+  font-family: inherit;
+  border: 2px solid hsl(235, 50%, 74%);
+  border-bottom: none;
+  border-bottom-left-radius: none;
+  border-bottom-right-radius: none;
+  line-height: 1.4;
+  width: 55dvw;
+  margin-top: 10px;
+  margin-bottom: -17px;
+  font-size: 25px;
+}
+
+.thread-input {
+  flex-grow: 1;
+  height: 70px;
+  padding: .5em;
+  font-size: inherit;
+  font-family: inherit;
+  border: 2px solid hsl(235, 50%, 74%);
+  border-bottom: none;
+  border-top: none;
+  border-bottom-left-radius: none;
+  border-bottom-right-radius: none;
+  line-height: 1.4;
+  width: 55dvw;
+  margin-top: 10px;
+}
+
 .message-input {
   flex-grow: 1;
   height: 70px;
@@ -65,6 +100,16 @@ button {
 }
 
 .message-input:focus {
+  border-color: hsl(235, 100%, 67%);
+  outline: none;
+}
+
+.title-input:focus {
+  border-color: hsl(235, 100%, 67%);
+  outline: none;
+}
+
+.thread-input:focus {
   border-color: hsl(235, 100%, 67%);
   outline: none;
 }

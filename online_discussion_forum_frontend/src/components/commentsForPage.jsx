@@ -231,21 +231,25 @@ export function Comment({ _id, user, profile, content, upvotes, downvotes, image
                                 open={Boolean(anchorEl)}
                                 onClose={handleClose}
                             >
-                                <MenuItem
-                                    onClick={() => {
-                                        handleClose();
-                                        setIsEditing(prev => !prev);
-                                    }}
-                                    selected={isEditing}
-                                >{isEditing ? "Cancel Edit" : "Edit"}</MenuItem>
-                                <MenuItem
-                                    onClick={() => {
-                                        handleClose();
-                                        setIsDelete(true); // Set isDelete to true to open the modal
-                                        handleOpenModal(); // Open the modal
-                                    }}
+                                {decoded.userId === user && (
+                                    <Box>
+                                        <MenuItem
+                                            onClick={() => {
+                                                handleClose();
+                                                setIsEditing(prev => !prev);
+                                            }}
+                                            selected={isEditing}
+                                        >{isEditing ? "Cancel Edit" : "Edit"}</MenuItem>
+                                        <MenuItem
+                                            onClick={() => {
+                                                handleClose();
+                                                setIsDelete(true); // Set isDelete to true to open the modal
+                                                handleOpenModal(); // Open the modal
+                                            }}
 
-                                >Delete</MenuItem>
+                                        >Delete</MenuItem>
+                                    </Box>
+                                )}
                                 <MenuItem onClick={handleClose}>Report</MenuItem>
                             </Menu>
                         </Box>

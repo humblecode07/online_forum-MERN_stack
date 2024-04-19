@@ -116,7 +116,7 @@ const Threads = () => {
                           bgcolor: 'transparent',
                           color: '#1976d2'
                         }
-                      }}><Typography>{thread.upvotes}</Typography></Button> {/* Prevent navigation */}
+                      }}><Typography>{thread.upvotes}</Typography></Button>
                       <Button onClick={(e) => {
                         e.stopPropagation();
                         handleVote(thread._id, 'downvote');

@@ -1,63 +1,47 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { Typography, Box, Tabs, Tab, Stack, Button } from '@mui/material/';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import React, { useState, useEffect } from 'react';
+import StudentList from '../../components/studentList';
+import CreateInstructor from '../../modals/CreateInstructor';
+import CreateStudent from '../../modals/CreateStudent';
 
 const Users = () => {
-    const [users, setUsers] = useState([]);
+    const [value, setValue] = React.useState('1');
 
-    const axiosPrivate = useAxiosPrivate();
-    const navigate = useNavigate();
-    const location = useLocation();
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
 
-    useEffect(() => {
-        let isMounted = true;
-        const controller = new AbortController();
-    
-        const getUsers = async () => {
-            try {
-                const response = await axiosPrivate.get('/users', {
-                    signal: controller.signal
-                });
-                const userData = response.data.users.map(user => ({
-                    _id: user._id,
-                    user_name: user.user_name,
-                    school_id: user.school_id,  
-                    first_name: user.first_name,
-                    family_name: user.family_name,
-                    email: user.email,
-                    bio: user.bio,
-                    date_of_birth: user.date_of_birth,
-                    sex: user.sex,
-                    department: user.department,
-                    year_level: user.year_level,
-                    officer: user.officer,
-                    role: user.role
-                }));
-                isMounted && setUsers(userData);
-            } catch (err) {
-                console.log(err)
-                navigate('/admin/login', { state: { from: location }, replace: true });
-            }
-        }
-    
-        getUsers();
-    
-        return () => {
-            isMounted = false;
-            controller.abort();
-        }
-    }, []);
+    return (
+        <Box sx={{ width: '55dvw', typography: 'body1' }}>
+            <Stack direction={'row'} justifyContent={'space-between'} sx={{
+                marginBottom: '20px',
+            }}>
+                <Typography variant="h5" sx={{
+                    fontWeight: '700',
+                    fontSize: '30px',
+                }}>User List</Typography>
+                {
+                    value === '1' ? 
+                    <CreateStudent /> : 
+                    <CreateInstructor/>
+                }
+            </Stack>
 
-  return (
-      <article>
-          <h2>Users List</h2>
-          {users?.length ? 
-              (<ul>
-                  {users.map((user) => <li key={user._id}>{user.user_name}, {user.bio}</li>)}
-              </ul>)
-              : <p>No users found</p>}
-      </article>
-  );
+            <TabContext value={value}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <TabList onChange={handleChange}>
+                        <Tab label="Students" value="1" />
+                        <Tab label="Instructors" value="2" />
+                    </TabList>
+                </Box>
+                <TabPanel value="1"><StudentList /></TabPanel>
+                <TabPanel value="2">Item Two</TabPanel>
+            </TabContext>
+        </Box>
+    );
 };
 
 

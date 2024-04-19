@@ -55,6 +55,11 @@ exports.thread_create = asyncHandler(async (req, res, next) => {
         { new: true }
     );
 
+    await User.findByIdAndUpdate(req.userId, 
+        { $push: { threads: thread._id } }, 
+        { new: true }
+    )
+
     return res.status(200).json({
         message: "Thread, " + req.body.title + ", has been created",
     })
@@ -89,16 +94,38 @@ exports.thread_update = asyncHandler(async (req, res, next) => {
 /* Delete a thread */
 exports.thread_delete = asyncHandler(async (req, res, next) => {
     const threadId = req.params.threadId;
-    
-    await Comment.deleteMany({ threadPost: threadId });
+
+    const usersWhoUpvoted = await User.find({ upvotedThreads: threadId });
+    const usersWhoDownvoted = await User.find({ downvotedThreads: threadId });
+
+    for (const user of usersWhoUpvoted) {
+        await User.findByIdAndUpdate(user._id, 
+            { $pull: { upvotedThreads: threadId } },
+            { new: true }
+        );
+    }
+
+    for (const user of usersWhoDownvoted) {
+        await User.findByIdAndUpdate(user._id, 
+            { $pull: { downvotedThreads: threadId } },
+            { new: true }
+        );
+    }
 
     const thread = await Thread.findByIdAndDelete(threadId);
+
+    await Comment.deleteMany({ threadPost: threadId });
 
     const forumId = req.forumId;
     await Forum.findByIdAndUpdate(forumId, 
         { $pull: { threads: threadId } },
         { new: true }
     );
+
+    await User.findByIdAndUpdate(req.userId, 
+        { $pull: { threads: thread._id } }, 
+        { new: true }
+    )
 
 
     if (!thread) {
@@ -132,6 +159,9 @@ exports.thread_vote = asyncHandler(async (req, res, next) => {
                 $inc: { upvotes: -1 },
                 $pull: { upvotedBy: user._id }
             });
+            await User.findByIdAndUpdate(req.userId, {
+                $pull: { upvotedThreads: thread._id }
+            });
             res.status(200).json({ message: "Thread upvote removed successfully." });
         } else if (alreadyDownvoted) {
             // User has already downvoted, remove the downvote and add the upvote
@@ -140,12 +170,19 @@ exports.thread_vote = asyncHandler(async (req, res, next) => {
                 $pull: { downvotedBy: user._id },
                 $addToSet: { upvotedBy: user._id }
             });
+            await User.findByIdAndUpdate(req.userId, {
+                $pull: { downvotedThreads: thread._id },
+                $addToSet: { upvotedThreads: thread._id }
+            });
             res.status(200).json({ message: "Thread upvoted successfully." });
         } else {
             // User hasn't upvoted yet, add the upvote
             await Thread.findByIdAndUpdate(req.params.threadId, {
                 $inc: { upvotes: 1 },
                 $addToSet: { upvotedBy: user._id }
+            });
+            await User.findByIdAndUpdate(req.userId, {
+                $addToSet: { upvotedThreads: thread._id }
             });
             res.status(200).json({ message: "Thread upvoted successfully." });
         }
@@ -156,6 +193,9 @@ exports.thread_vote = asyncHandler(async (req, res, next) => {
                 $inc: { downvotes: -1 },
                 $pull: { downvotedBy: user._id }
             });
+            await User.findByIdAndUpdate(req.userId, {
+                $pull: { downvotedThreads: thread._id }
+            });
             res.status(200).json({ message: "Thread downvote removed successfully." });
         } else if (alreadyUpvoted) {
             // User has already upvoted, remove the upvote and add the downvote
@@ -164,12 +204,19 @@ exports.thread_vote = asyncHandler(async (req, res, next) => {
                 $pull: { upvotedBy: user._id },
                 $addToSet: { downvotedBy: user._id }
             });
+            await User.findByIdAndUpdate(req.userId, {
+                $pull: { upvotedThreads: thread._id },
+                $addToSet: { downvotedThreads: thread._id }
+            });
             res.status(200).json({ message: "Thread downvoted successfully." });
         } else {
             // User hasn't downvoted yet, add the downvote
             await Thread.findByIdAndUpdate(req.params.threadId, {
                 $inc: { downvotes: 1 },
                 $addToSet: { downvotedBy: user._id }
+            });
+            await User.findByIdAndUpdate(req.userId, {
+                $addToSet: { downvotedThreads: thread._id }
             });
             res.status(200).json({ message: "Thread downvoted successfully." });
         }
