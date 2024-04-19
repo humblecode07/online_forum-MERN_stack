@@ -177,6 +177,27 @@ const UserAccount = () => {
         }
     }
 
+    const updateBio = async () => {
+        try {
+            const response = await axiosPrivate.patch(`/users/${studentId}`, {
+                bio: bio
+            });
+            console.log(response.data);
+            window.location.reload();
+        } catch (error) {
+            if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                console.log(error.request);
+            } else {
+                console.log('Error', error.message);
+            }
+            console.log(error.config);
+        }
+    }
+
     return (
         <Box paddingBottom={'100px'}>
             <Box marginBottom={'20px'}>
@@ -321,7 +342,7 @@ const UserAccount = () => {
                             }}
                         />
                     </Stack>
-                    <Button variant='outlined' sx={{ borderRadius: '20px', width: '15%' }}>Change</Button>
+                    <Button onClick={updateBio} variant='outlined' sx={{ borderRadius: '20px', width: '15%' }}>Change</Button>
                 </Stack>
                 <Stack direction={'row'} justifyContent={'space-between'} marginBottom={'20px'}>
                     <Stack>

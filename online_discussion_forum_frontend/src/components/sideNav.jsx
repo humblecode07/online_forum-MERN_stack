@@ -107,7 +107,7 @@ const SideNav = () => {
                     />
                 </Grid>
                 <Grid item sx={{ width: '200px' }}>
-                    <SidebarButton startIcon={<FilterFramesIcon />} to="/admin/users" text="Bulletin Board" sx={{ width: '100%', justifyContent: 'flex-start' }} />
+                    <SidebarButton startIcon={<FilterFramesIcon />} to="/admin/bulletin$board" text="Bulletin Board" sx={{ width: '100%', justifyContent: 'flex-start' }} />
                 </Grid>
                 <Grid item sx={{ width: '200px' }}>
                     <SidebarButton startIcon={<AssessmentIcon />} to="/admin/users" text="Reports" sx={{ width: '100%', justifyContent: 'flex-start' }} />

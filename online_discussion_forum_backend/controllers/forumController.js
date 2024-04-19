@@ -50,6 +50,7 @@ exports.forum_create = asyncHandler(async (req, res, next) => {
         creator: user.first_name + " " + user.family_name,
         description: req.body.description,
         creationTime: req.body.creationTime,
+        type: req.body.type
     });
 
     await forum.save();

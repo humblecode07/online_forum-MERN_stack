@@ -6,6 +6,19 @@ const mongoose = require('mongoose');
 
 const asyncHandler = require('express-async-handler');
 
+/* Get all threads in all forums */
+exports.thread_get_all_forum_all = asyncHandler(async (req, res, next) => {
+    const threads = await Thread.find().exec();
+
+    const threadCount = threads.length;
+
+    return res.status(200).json({
+        threads,
+        threadCount
+    });
+});
+
+
 /* Get all threads in a certain forum */
 exports.thread_get_all_forum = asyncHandler(async (req, res, next) => {
     const [thread, threadCount] = await Promise.all([
@@ -222,5 +235,16 @@ exports.thread_vote = asyncHandler(async (req, res, next) => {
         }
     } else {
         res.status(400).json({ message: "Invalid vote type. Please provide 'upvote' or 'downvote'." });
+    }
+});
+
+/* Get Top Ten Upvotes my dudes */
+exports.thread_get_top_ten_threads = asyncHandler(async (req, res, next) => {
+    try {
+        const topThreads = await Thread.find().sort({ upvotes: -1 }).limit(10);
+        res.json({ topThreads });
+    } catch (error) {
+        console.error('Error fetching top threads:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });

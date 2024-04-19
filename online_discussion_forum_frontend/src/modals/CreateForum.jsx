@@ -26,6 +26,7 @@ const CreateForum = () => {
     const [forumName, setForumName] = useState("");
     const [description, setDescription] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const type = 'Forums'
 
     const handleFileChange = (event) => {
         setSelectedFiles([...selectedFiles, ...event.target.files]);
@@ -36,6 +37,7 @@ const CreateForum = () => {
 
         formData.append('name', forumName);
         formData.append('description', description);
+        formData.append('type', type)
 
         selectedFiles.forEach((file) => {
             formData.append('image', file);

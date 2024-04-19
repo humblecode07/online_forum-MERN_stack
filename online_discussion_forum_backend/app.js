@@ -60,7 +60,9 @@ app.use(checkAuth);
 app.use('/users', userRouter)
 app.use('/instructors', instructorRouter)
 app.use('/forums', forumRouter)
+app.use('/threads', threadRouter)
 app.use('/forums/:forumId/threads', extractForumId, threadRouter)
+app.use('/comments', commentRouter)
 app.use('/forums/:forumId/threads/:threadId/comments', extractThreadId, commentRouter)
 
 

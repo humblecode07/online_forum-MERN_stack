@@ -74,16 +74,16 @@ const Students = () => {
         if (decoded.roles.includes('Admin')) {
             if (!window.location.pathname.startsWith('/client')) {
                 // If the current path does not start with '/client', navigate to the admin page
-                navigate(`/admin/${studentId}/settings`)
+                navigate(`/admin/student/${studentId}/settings`)
             }
             else {
-                navigate(`/client/${studentId}/settings`)
+                navigate(`/client/student/${studentId}/settings`)
             }
         } else if (decoded.roles.includes('Instructor')) {
             navigate(`/instructor/${studentId}/settings`)
         } else if (decoded.roles.includes('Student')) {
             console.log('reached');
-            navigate(`/client/${studentId}/settings`)
+            navigate(`/client/student/${studentId}/settings`)
         }
     };
 

@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import StudentList from '../../components/studentList';
 import CreateInstructor from '../../modals/CreateInstructor';
 import CreateStudent from '../../modals/CreateStudent';
+import InstructorsList from '../../components/instructorsList';
 
 const Users = () => {
     const [value, setValue] = React.useState('1');
@@ -38,7 +39,7 @@ const Users = () => {
                     </TabList>
                 </Box>
                 <TabPanel value="1"><StudentList /></TabPanel>
-                <TabPanel value="2">Item Two</TabPanel>
+                <TabPanel value="2"><InstructorsList /></TabPanel>
             </TabContext>
         </Box>
     );

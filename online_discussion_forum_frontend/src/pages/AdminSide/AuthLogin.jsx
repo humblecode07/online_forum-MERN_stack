@@ -23,7 +23,8 @@ const AuthLogin = () => {
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [check, toggleCheck] = useToggle('persist', false)
-  
+
+  const showLabel = false
 
   useEffect(() => {
     userRef.current.focus();
@@ -37,12 +38,12 @@ const AuthLogin = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(LOGIN_URL, 
+      const response = await axios.post(LOGIN_URL,
         JSON.stringify({ email: email, password: pwd }), {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true
-        }
-      );  
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true
+      }
+      );
       console.log(response.data)
 
       const accessToken = response.data.token;
@@ -54,20 +55,20 @@ const AuthLogin = () => {
       setPwd('')
       navigate('/admin/dashboard');
     }
-    catch(err) {
-        if (!err.response) {
-            setErrMsg('No Server Response')
-        }    
-        else if (err.response?.status === 400) {
-            setErrMsg('Missing Username or Password');
-        }
-        else if (err.response?.status === 401) {
-            setErrMsg('Unauthorized')
-        }
-        else {
-            setErrMsg('Auth Failed');
-        }
-        errRef.current.focus();
+    catch (err) {
+      if (!err.response) {
+        setErrMsg('No Server Response')
+      }
+      else if (err.response?.status === 400) {
+        setErrMsg('Missing Username or Password');
+      }
+      else if (err.response?.status === 401) {
+        setErrMsg('Unauthorized')
+      }
+      else {
+        setErrMsg('Auth Failed');
+      }
+      errRef.current.focus();
     }
   }
 
@@ -87,7 +88,7 @@ const AuthLogin = () => {
           <div>
             <label htmlFor="email" className="block text-sm font-medium leading-6 text-balance">Admin Email</label>
             <div className="mt-2">
-              <input id="email" name="email" type="email" autoComplete="off" {...resetAttribute}  required ref={userRef} className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-black-600 shadow-sm ring-1 ring-inset ring-blue-500 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
+              <input id="email" name="email" type="email" autoComplete="off" {...resetAttribute} required ref={userRef} className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-black-600 shadow-sm ring-1 ring-inset ring-blue-500 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
           </div>
 
@@ -100,18 +101,21 @@ const AuthLogin = () => {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center">
-          <input
-            type="checkbox"
-            id="persist"
-            onChange={toggleCheck}
-            checked={check}
-          />
-          <label htmlFor="persist" className="ml-2 block text-sm text-gray-900">
-            Trust this device
-          </label>
-        </div>
+          {showLabel && (
+            <div className="mt-6 flex items-center">
+              <input
+                type="checkbox"
+                id="persist"
+                onChange={toggleCheck}
+                checked={check}
+              />
 
+              <label htmlFor="persist" className="ml-2 block text-sm text-gray-900">
+                Trust this device
+              </label>
+
+            </div>
+          )}
           <div>
             <button type="submit" onClick={handleSubmit} className="flex w-full justify-center rounded-md bg-blue-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black focus:ring-offset-2 focus:ring-offset-red-500">Sign in</button>
           </div>
@@ -122,8 +126,8 @@ const AuthLogin = () => {
         </p>
       </div>
     </div>
-    
+
   )
- }
+}
 
 export default AuthLogin

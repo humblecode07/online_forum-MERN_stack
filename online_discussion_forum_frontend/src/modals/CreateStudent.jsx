@@ -27,8 +27,6 @@ const style = {
 const CreateStudent = () => {
   const [instructors, setInstructors] = useState([]);
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -343,7 +341,7 @@ const CreateStudent = () => {
             </Box>
             <Box sx={{ marginBottom: '20px' }}>
               <InputLabel sx={{ marginBottom: '10px' }}>Profile Image</InputLabel>
-              <input type="file" multiple onChange={handleFileChange} />
+              <input type="file" onChange={handleFileChange} />
             </Box>
             <Box sx={{ marginBottom: '20px' }}>
               <InputLabel id="gender-option-label">Gender</InputLabel>

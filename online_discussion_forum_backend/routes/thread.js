@@ -31,6 +31,12 @@ const upload = multer({
 
 const router = express.Router();
 
+/* GET request for all threads in all forums */
+router.get('/all', thread_controller.thread_get_all_forum_all);
+
+/* Get Top Ten Upvoted Threads */
+router.get('/topten', thread_controller.thread_get_top_ten_threads);
+
 /* GET request for all threads on a certain forum */
 router.get('/', thread_controller.thread_get_all_forum);
 

@@ -1,6 +1,6 @@
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const style = {
@@ -68,6 +68,25 @@ const CreateThreads = ({ threadTitle, threadContent, edit }) => {
             console.log(error.config);
         }
     };
+
+    useEffect(() => {
+        console.log("Fetching thread content...");
+        const fetchThreadContent = async () => {
+          try {
+            const response = await axiosPrivate.get(`/forums/${forumId}/threads/`);
+            console.log("Response:", response.data);
+            const { content: fetchedContent } = response.data;
+            console.log("Fetched content:", fetchedContent);
+            setContent(fetchedContent);
+          } catch (error) {
+            console.error('Error fetching thread content:', error);
+          }
+        };
+    
+        fetchThreadContent();
+    }, [forumId, axiosPrivate])
+    
+    console.log(content);
 
     return (
         <>

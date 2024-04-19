@@ -156,7 +156,7 @@ const Comments = () => {
   };
 
   return (
-    <div>
+    <div style={{ width: '55dvw' }}>
       {thread ? (
         <Box width={'55dvw'}>
           <Box display={'flex'} flexDirection={'row'}>
@@ -217,7 +217,8 @@ const Comments = () => {
           </Box>
           <Box marginBottom={'20px'}>
             <Typography fontSize={'22px'} fontWeight={'700'} marginBottom={'20px'}>{thread.title}</Typography>
-            <Typography fontSize={'14px'}>{thread.content}</Typography>
+            <pre style={{ fontFamily: 'Roboto', fontSize: '14px', overflowX: 'auto', textWrap: 'wrap' }}>{thread.content}</pre>
+
           </Box>
           <Box marginBottom={'10px'}>
             {thread.image.length > 1 ? <Carousel navButtonsAlwaysVisible={true}

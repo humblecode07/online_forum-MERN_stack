@@ -13,7 +13,7 @@ const SideNav = () => {
   const [selectedForum, setSelectedForum] = useState(null); // State to track selected forum ID
 
   const handleForumClick = (forumId) => {
-    setSelectedForum(forumId); 
+    setSelectedForum(forumId);
     navigate(`/client/${forumId}/`)
   }
 
@@ -34,7 +34,8 @@ const SideNav = () => {
           creatorId: forum.user,
           description: forum.description,
           creationTime: new Date(forum.creationTime).toLocaleDateString(),
-          threads: forum.threads
+          threads: forum.threads,
+          type: forum.type
         }));
         console.log(forumData)
         isMounted && setForums(forumData);
@@ -62,7 +63,7 @@ const SideNav = () => {
       bgcolor={"#f2f2f2"}
       flexDirection={"column"}
       paddingLeft={'1dvw'}
-      >
+    >
 
       <Box>
         <Stack spacing={9} direction={'row'} justifyContent={'center'} alignItems={'flex-start'} sx={{
@@ -75,34 +76,60 @@ const SideNav = () => {
             fontFamily: 'Roboto',
             fontSize: '20px',
             fontWeight: 300,
-          }}>DYCI HUB</ Typography>
+          }}>DYCI HUB</Typography>
           <IconButton aria-label="minimize side-nav"><MenuIcon /></IconButton>
         </Stack>
         <Divider sx={{ marginBottom: '20px' }} />
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box display={'flex'} flexDirection={'column'} marginBottom={'20px'}>
           <InputLabel id="bulletin-board-label">Bulletin Board</InputLabel>
-
-          <InputLabel id="discussion-forum-label">Discussion Forum</InputLabel>
           {forums?.length ? (
             <Grid container spacing={1} direction={'column'} justifyContent={'flex-start'} alignItems={'flex-start'}>
-            {forums.map((forum) => (
-              <Grid item key={forum._id}>
-                <Button 
-                  variant='contained' 
-                  onClick={() => handleForumClick(forum._id)} 
-                  sx={{
-                    width: '200px',
-                    justifyContent: 'flex-start',
-                    marginBottom: '5px',
-                    backgroundColor: selectedForum === forum._id ? '#1976d2' : 'transparent', // Apply color based on selection
-                    color: selectedForum === forum._id ? 'white' : 'black', // Text color based on selection
-                  }}
-                >
-                  {forum.forumName}
-                </Button>
-              </Grid>
-            ))}
-          </Grid>
+              {forums.map((forum) => (
+                <Grid item key={forum._id}>
+                  {forum.type === "Bulletin" ? (
+                    <Button
+                      variant='contained'
+                      onClick={() => handleForumClick(forum._id)}
+                      sx={{
+                        width: '200px',
+                        justifyContent: 'flex-start',
+                        marginBottom: '5px',
+                        backgroundColor: selectedForum === forum._id ? '#1976d2' : 'transparent', // Apply color based on selection
+                        color: selectedForum === forum._id ? 'white' : 'black', // Text color based on selection
+                      }}
+                    >
+                      {forum.forumName}
+                    </Button>
+                  ) : null}
+                </Grid>
+              ))}
+            </Grid>
+          ) : null}
+        </Box>
+        <Box>
+          <InputLabel id="bulletin-board-label">Discussion Forum</InputLabel>
+          {forums?.length ? (
+            <Grid container spacing={1} direction={'column'} justifyContent={'flex-start'} alignItems={'flex-start'}>
+              {forums.map((forum) => (
+                <Grid item key={forum._id}>
+                  {forum.type === "Forums" ? (
+                    <Button
+                      variant='contained'
+                      onClick={() => handleForumClick(forum._id)}
+                      sx={{
+                        width: '200px',
+                        justifyContent: 'flex-start',
+                        marginBottom: '5px',
+                        backgroundColor: selectedForum === forum._id ? '#1976d2' : 'transparent', // Apply color based on selection
+                        color: selectedForum === forum._id ? 'white' : 'black', // Text color based on selection
+                      }}
+                    >
+                      {forum.forumName}
+                    </Button>
+                  ) : null}
+                </Grid>
+              ))}
+            </Grid>
           ) : null}
         </Box>
       </Box>

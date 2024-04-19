@@ -29,6 +29,9 @@ const upload = multer({
 
 const router = express.Router();
 
+/* GET request for all threads in all forums */
+router.get('/all', comment_controller.comment_get_all_thread_all);
+
 /* GET requests for all comments on a certain thread */
 router.get('/', comment_controller.comment_get_all);
 

@@ -30,20 +30,20 @@ const NavBar = () => {
 		setAnchorEl(null);
 	};
 
-	const handleStudentClick = (studentId) => {
+	const handleStudentClick = (studentId, settings) => {
 		if (decoded.roles.includes('Admin')) {
 			if (!window.location.pathname.startsWith('/client')) {
 				// If the current path does not start with '/client', navigate to the admin page
-				navigate(`/admin/${studentId}/`);
+				navigate(`/admin/student/${studentId}/${settings ? 'settings' : ''}`);
 			}
 			else {
-				navigate(`/client/user/${studentId}/`);
+				navigate(`/client/student/${studentId}/${settings ? 'settings' : ''}`);
 			}
 		} else if (decoded.roles.includes('Instructor')) {
-			navigate(`/instructor/${studentId}/`);
+			navigate(`/instructor/${studentId}/${settings ? 'settings' : ''}`);
 		} else if (decoded.roles.includes('Student')) {
 			console.log('reached');
-			navigate(`/client/user/${studentId}/`);
+			navigate(`/client/student/${studentId}/${settings ? 'settings' : ''}`);
 		}
 	};
 
@@ -147,7 +147,7 @@ const NavBar = () => {
 			>
 				<MenuItem onClick={() => {
 					handleClose();
-					handleStudentClick(decoded.userId)
+					handleStudentClick(decoded.userId, false)
 				}}>
 					<ListItemIcon>
 						<AccountCircleIcon />
@@ -155,7 +155,10 @@ const NavBar = () => {
 					Profile
 				</MenuItem>
 				<Divider />
-				<MenuItem onClick={handleClose}>
+				<MenuItem onClick={() =>{
+					handleClose();
+					handleStudentClick(decoded.userId, true)
+				}}>
 					<ListItemIcon>
 						<Settings fontSize="small" />
 					</ListItemIcon>

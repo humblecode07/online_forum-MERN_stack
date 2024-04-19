@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { Box, Button, Card, CardContent, Grid, Typography, Stack, CardMedia } from '@mui/material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CommentIcon from '@mui/icons-material/Comment';
 import CreateThreads from '../../modals/CreateThreads';
@@ -61,6 +61,8 @@ const Threads = () => {
     fetchThreads(); // Trigger fetching of threads
   }, [axiosPrivate, forumId, navigate, location]);
 
+  console.log(threads)
+
   return (
     <Box
       display={'flex'}
@@ -99,13 +101,20 @@ const Threads = () => {
                       WebkitLineClamp: '2',
                       WebkitBoxOrient: 'vertical',
                     }}>{thread.title}</Typography>
-                    <Typography sx={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                    }}>{thread.content}</Typography>
+                    <Typography
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        fontFamily: 'Roboto',
+                        whiteSpace: 'pre-wrap', // Preserve whitespace and line breaks
+                        margin: 0, // Ensure no extra margin
+                      }}
+                    >
+                      {thread.content}
+                    </Typography>
                     <Stack direction={'row'} spacing={2}>
                       <Button onClick={(e) => {
                         e.stopPropagation();
@@ -120,7 +129,13 @@ const Threads = () => {
                       <Button onClick={(e) => {
                         e.stopPropagation();
                         handleVote(thread._id, 'downvote');
-                      }} startIcon={<ThumbDownIcon />}><Typography>{thread.downvotes}</Typography></Button> {/* Prevent navigation */}
+                      }} startIcon={<ThumbDownOffAltIcon />} sx={{
+                        color: '#b01527',
+                        '&:hover': {
+                            bgcolor: 'b01527',
+                            color: '#b01527'
+                        }
+                      }}><Typography>{thread.downvotes}</Typography></Button> {/* Prevent navigation */}
                       <Button startIcon={<CommentIcon />}><Typography>{thread.commentCount}</Typography></Button>
                       <Button startIcon={<VisibilityIcon />}><Typography>{thread.viewCount}</Typography></Button>
                     </Stack>

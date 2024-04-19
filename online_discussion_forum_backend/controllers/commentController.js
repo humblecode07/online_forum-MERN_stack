@@ -5,6 +5,18 @@ const mongoose = require('mongoose');
 
 const asyncHandler = require('express-async-handler');
 
+/* Get all threads in all threads */
+exports.comment_get_all_thread_all = asyncHandler(async (req, res, next) => {
+    const comments = await Comment.find().exec();
+
+    const commentCount = comments.length;
+
+    return res.status(200).json({
+        comments,
+        commentCount
+    });
+});
+
 /* Get all comments on a certain thread */
 exports.comment_get_all = asyncHandler(async (req, res, next) => {
     const threadId = req.threadId;

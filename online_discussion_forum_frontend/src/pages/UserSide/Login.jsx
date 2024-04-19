@@ -2,7 +2,7 @@ import React from 'react'
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
 import axios from '../../api/axios';
-import { Typography, Box, Tab, Stack, Grid, Card, CardContent, Avatar, CardMedia, Button, Paper, TextField } from '@mui/material/';
+import { Typography, Box, Button, TextField } from '@mui/material/';
 import useAuth from '../../hooks/useAuth';
 import Image from 'mui-image';
 import Carousel from 'react-material-ui-carousel';
@@ -125,14 +125,15 @@ const Login = () => {
         zIndex={1}
       >
         <Carousel navButtonsAlwaysInvisible={true} cycleNavigation={true} autoPlay={true} animation="slide" sx={{
-          width: '100dvw',
+          width: '100%',
         }}>
           <Box
             component="img"
             sx={{
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
-              height: '100dvh'
+              height: '100dvh',
+              width: '100dvw'
             }}
             alt="The house from the offer."
             src={photoOne}
@@ -142,7 +143,8 @@ const Login = () => {
             sx={{
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
-              height: '100dvh'
+              height: '100dvh',
+              width: '100dvw'
             }}
             alt="The house from the offer."
             src={photoTwo}
@@ -152,7 +154,8 @@ const Login = () => {
             sx={{
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
-              height: '100dvh'
+              height: '100dvh',
+              width: '100dvw'
             }}
             alt="The house from the offer."
             src={photoThree}
@@ -162,14 +165,14 @@ const Login = () => {
             sx={{
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
-              height: '100dvh'
+              height: '100dvh',
+              width: '100dvw'
             }}
             alt="The house from the offer."
             src={photoFour}
           />
         </Carousel>
       </Box>
-
     </Box>
   )
 }
